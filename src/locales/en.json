@@ -1,0 +1,236 @@
+{
+  "company": {
+    "name": "AL-ARYAM",
+    "fullName": "AL-ARYAM Information Technology",
+    "tagline": "Your Secure Technical Partner",
+    "email": "Info@Alaryam.ly"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "langSwitch": "العربية"
+  },
+  "cta": {
+    "contact": "Get in touch",
+    "services": "Explore our services",
+    "learnMore": "Learn more"
+  },
+  "footer": {
+    "rights": "© {year} AL-ARYAM. All rights reserved.",
+    "blurb": "Integrated technical and engineering solutions for organizations, businesses, and government entities."
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Your Secure Technical Partner",
+      "title": "Innovation, security, integrated solutions.",
+      "lead": "AL-ARYAM delivers advanced technical and engineering solutions that combine expertise with quality. Through software, information systems, and networks, we help build a sustainable digital future — keeping organizations' data safe and their operations efficient."
+    },
+    "services": {
+      "title": "Passionate about integrated solutions",
+      "lead": "A diverse range of technical and engineering services built around our clients' needs — from organizations and businesses to government entities — for a safer, more innovative future."
+    },
+    "howWeWork": {
+      "title": "How we work",
+      "lead": "A clear path from the first conversation to long after launch.",
+      "step1": {
+        "title": "Understand",
+        "text": "We listen to your goals and study your environment and existing systems."
+      },
+      "step2": {
+        "title": "Design",
+        "text": "We shape an integrated solution and a clear implementation plan."
+      },
+      "step3": {
+        "title": "Build",
+        "text": "We implement, install, and test to the highest quality standards."
+      },
+      "step4": {
+        "title": "Operate & support",
+        "text": "We hand over, train your team, and stay by your side with ongoing support."
+      }
+    },
+    "whoWeServe": {
+      "title": "Who we serve",
+      "item1": {
+        "title": "Organizations",
+        "text": "systems and networks that protect data and keep operations running."
+      },
+      "item2": {
+        "title": "Businesses",
+        "text": "applications and smart solutions that raise efficiency."
+      },
+      "item3": {
+        "title": "Government entities",
+        "text": "secure, integrated solutions from design to operation."
+      }
+    },
+    "whyUs": {
+      "title": "Why AL-ARYAM",
+      "item1": {
+        "title": "Security first",
+        "text": "every solution is designed to keep your data safe."
+      },
+      "item2": {
+        "title": "Integrated solutions",
+        "text": "software, networks, and security systems under one roof."
+      },
+      "item3": {
+        "title": "Ongoing support",
+        "text": "we stay with you after delivery so your systems keep running efficiently."
+      },
+      "item4": {
+        "title": "Quality delivery",
+        "text": "the highest quality standards at every stage."
+      }
+    },
+    "cta": {
+      "title": "Our team is ready for your technical and consulting needs.",
+      "lead": "We stand behind your critical work and protect your most important data, so your business keeps moving."
+    }
+  },
+  "services": {
+    "pageTitle": "Our Services",
+    "pageLead": "A diverse range of technical and engineering services built around our clients' needs — from organizations and businesses to government entities — for a safer, more innovative future.",
+    "whatWeOffer": "What we offer",
+    "otherServices": "Other services",
+    "ctaTitle": "Need this service?",
+    "ctaLead": "Write to us and we'll get back to you to discuss your needs.",
+    "software-development": {
+      "title": "Software Development",
+      "short": "Design and development of web applications, software systems, and apps — with specialist support.",
+      "intro": "We build systems and applications shaped around how your organization works — from idea to launch and maintenance.",
+      "items": [
+        "Web application development and maintenance",
+        "Mobile app development",
+        "Custom management systems for businesses and organizations",
+        "End-to-end software services with specialist support"
+      ]
+    },
+    "technical-support": {
+      "title": "Ongoing Technical Support",
+      "short": "Technical support that keeps your systems running at full efficiency.",
+      "intro": "We stay by your side after delivery — because your continuity matters most.",
+      "items": [
+        "Specialist support for systems and applications",
+        "Technical consulting services",
+        "On-site support to ensure business continuity",
+        "Routine maintenance and system performance monitoring"
+      ]
+    },
+    "security-surveillance": {
+      "title": "Security & Surveillance Systems",
+      "short": "CCTV, early-warning alarm systems, and smart access control.",
+      "intro": "Security solutions that protect your facilities and give you clear visibility and full control.",
+      "items": [
+        "CCTV installation and maintenance",
+        "Alarms and early-warning systems",
+        "Smart access control",
+        "Facility monitoring systems"
+      ]
+    },
+    "networks-infrastructure": {
+      "title": "Networks & Infrastructure",
+      "short": "Installation and maintenance of wired and wireless computer and telecom networks.",
+      "intro": "Reliable, secure infrastructure is the foundation every system stands on.",
+      "items": [
+        "Wired and wireless computer network installation and maintenance",
+        "Telecommunication networks",
+        "Design and implementation of secure networks and IT systems"
+      ]
+    },
+    "project-management": {
+      "title": "Project Management & Integration",
+      "short": "End-to-end project delivery from design to operation, to the highest quality standards.",
+      "intro": "One partner that owns your whole project and connects its systems together.",
+      "items": [
+        "Delivery from design through operation",
+        "Integration of technical and engineering systems",
+        "Adherence to the highest quality standards"
+      ]
+    },
+    "iot": {
+      "title": "Internet of Things",
+      "short": "We design and build future-ready smart systems.",
+      "intro": "We integrate Internet of Things (IoT) technology to create automated, data-driven solutions for urban development.",
+      "items": [
+        "Smart system design and implementation",
+        "Automated, data-driven solutions",
+        "Solutions for urban development"
+      ]
+    }
+  },
+  "about": {
+    "pageTitle": "About us",
+    "intro": "AL-ARYAM is a Libyan company providing professional services across a wide range of technical and engineering needs, supporting businesses and organizations with innovative, reliable solutions.",
+    "vision": {
+      "label": "Our vision",
+      "text": "to be the secure technical partner organizations rely on to build their digital future."
+    },
+    "mission": {
+      "label": "Our mission",
+      "text": "to deliver integrated technical and engineering solutions that protect data and strengthen business efficiency and continuity."
+    },
+    "values": {
+      "title": "Our values"
+    },
+    "capabilities": {
+      "tech": {
+        "title": "Integrated technical solutions",
+        "text": "web and mobile app development and maintenance · design and implementation of secure networks and IT systems · specialist technical support and consulting."
+      },
+      "eng": {
+        "title": "Advanced engineering services",
+        "text": "CCTV and alarm system installation and maintenance · management systems and applications for businesses and organizations · end-to-end software services with on-site support for business continuity."
+      }
+    }
+  },
+  "contact": {
+    "pageTitle": "Contact us",
+    "lead": "We'd love to hear from you. Send us a message and we'll get back to you soon.",
+    "emailLabel": "Email"
+  },
+  "form": {
+    "name": "Name",
+    "email": "Email",
+    "organization": "Organization (optional)",
+    "service": "Service of interest",
+    "serviceOther": "Other",
+    "message": "Your message",
+    "submit": "Send message",
+    "sending": "Sending…",
+    "success": "Thank you — your message has arrived and we'll be in touch soon.",
+    "error": "Your message couldn't be sent. Please try again or email us at Info@Alaryam.ly",
+    "required": "This field is required",
+    "invalidEmail": "Enter a valid email address"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "lead": "The page may have moved, or the link is incorrect.",
+    "back": "Back to home"
+  },
+  "seo": {
+    "home": {
+      "title": "AL-ARYAM — Your Secure Technical Partner",
+      "description": "AL-ARYAM delivers advanced technical and engineering solutions that combine expertise with quality, keeping organizations' data safe and their operations efficient."
+    },
+    "services": {
+      "title": "Services — AL-ARYAM",
+      "description": "A diverse range of technical and engineering services built around our clients' needs — from organizations and businesses to government entities — for a safer, more innovative future."
+    },
+    "about": {
+      "title": "About — AL-ARYAM",
+      "description": "AL-ARYAM is a Libyan company providing professional services across a wide range of technical and engineering needs, supporting businesses and organizations with innovative, reliable solutions."
+    },
+    "contact": {
+      "title": "Contact — AL-ARYAM",
+      "description": "We'd love to hear from you. Send us a message and we'll get back to you soon."
+    },
+    "serviceSuffix": "— AL-ARYAM"
+  },
+  "comingNext": {
+    "badge": "Coming Soon",
+    "message": "This page is currently under development and will be available soon."
+  }
+}

@@ -1,0 +1,148 @@
+@import '@fontsource-variable/cairo/index.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Cairo Variable', Cairo, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #2A2E3B;
+    background-color: #FFFFFF;
+  }
+
+  /* Default interactive focus style */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 3px solid rgba(13, 7, 173, 0.35);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Typography Roles */
+  .text-h1 {
+    font-size: 36px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+  @media (min-width: 1024px) {
+    .text-h1 {
+      font-size: 56px;
+      line-height: 1.2;
+    }
+  }
+
+  .text-h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+  @media (min-width: 1024px) {
+    .text-h2 {
+      font-size: 40px;
+      line-height: 1.25;
+    }
+  }
+
+  .text-h3 {
+    font-size: 20px;
+    line-height: 1.35;
+    font-weight: 700;
+  }
+  @media (min-width: 1024px) {
+    .text-h3 {
+      font-size: 22px;
+      line-height: 1.35;
+    }
+  }
+
+  .text-lead {
+    font-size: 18px;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+  @media (min-width: 1024px) {
+    .text-lead {
+      font-size: 20px;
+      line-height: 1.8;
+    }
+  }
+
+  .text-body-custom {
+    font-size: 16px;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+  @media (min-width: 1024px) {
+    .text-body-custom {
+      font-size: 17px;
+      line-height: 1.8;
+    }
+  }
+
+  .text-eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  @media (min-width: 1024px) {
+    .text-eyebrow {
+      font-size: 14px;
+    }
+  }
+
+  /* Section Padding */
+  .py-section {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+  @media (min-width: 1024px) {
+    .py-section {
+      padding-top: 112px;
+      padding-bottom: 112px;
+    }
+  }
+
+  /* Card Styles */
+  .card-standard {
+    background-color: #FFFFFF;
+    border: 1px solid #E3E5EC;
+    border-radius: 20px;
+    padding: 32px;
+    transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .card-standard:hover {
+    transform: translateY(-4px);
+    border-color: #DCDAF5;
+    box-shadow: 0 12px 32px rgba(11, 13, 23, 0.08);
+  }
+}
+
+/* Scroll reveal motion */
+.reveal-init {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-init {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .card-standard {
+    transition: none !important;
+  }
+  .card-standard:hover {
+    transform: none !important;
+  }
+}
