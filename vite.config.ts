@@ -25,7 +25,7 @@ export default defineConfig({
         `/${lang}/contact`,
       ]);
 
-      return ['/', ...localized, '/404'];
+      return ['/', ...localized];
     },
     onPageRendered(route, renderedHTML) {
       // Ensure html lang and dir attributes match route

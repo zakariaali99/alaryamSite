@@ -2,8 +2,9 @@
 
 | # | Plan | Status |
 |---|---|---|
-| 01 | Foundation + logo SVGs + Home page (AR + EN) | ✅ Done (`d6a628d`) — reviewed in `reviews/001` |
-| 02 | **ONE RUN:** review fixes · mobile side drawer · Services, 6 service pages, About, Contact (+ PHP), 404 · SEO · **full motion system** · `.htaccess` + deploy package | ▶️ **Run now** — stop only at the end |
+| 01 | Foundation + logo SVGs + Home page (AR + EN) | ✅ Done (`d6a628d`) — `reviews/001` |
+| 02 | ONE RUN: full site · side drawer · contact PHP · SEO · motion system · deploy package | ✅ Done (`389bc06`) — `reviews/002`: not launch-ready yet |
+| 03 | **ONE RUN:** fix all review-002 issues — page transitions, motion-ready flag, undefined classes/buttons, contact success + i18n, PHP hardening, 404 noindex, emoji, Lighthouse, About copy, polish, recordings | ▶️ **Run now** |
 
 ## Owner decisions
 - **2026-09-15 (initial):**
@@ -11,12 +12,12 @@
   - English name **AL-ARYAM**; Arabic **شركة الأريام**.
   - Bilingual: Arabic (default, RTL) + English.
   - Light theme only.
-  - Contact: **email only** — `Info@Alaryam.ly`. No phone, address, map, or social links.
-  - Hosting: **cPanel** (Apache + PHP). Domain `alaryam.ly` just renewed.
+  - Contact: **email only** — `Info@Alaryam.ly`.
+  - Hosting: **cPanel** (Apache + PHP).
 - **2026-09-15 (update):**
-  - **Premium transitions, animated movement and effects** across the whole site.
-  - **Mobile nav = side drawer** (right in Arabic, left in English) — never a top dropdown.
-  - **Finish the rest of the site in one run.**
+  - Premium transitions, animated movement and effects across the site.
+  - Mobile nav = side drawer (right in Arabic, left in English).
+  - Work is delivered in one-run plans.
 
 ## Site map (final)
 ```
@@ -26,8 +27,6 @@
 /ar/services/:slug/  (6 slugs)     Service detail
 /ar/about/  /en/about/             About
 /ar/contact/  /en/contact/         Contact (form → /api/contact.php)
-/404.html                          Bilingual 404
+/404.html                          Bilingual 404 (noindex)
 /sitemap.xml  /robots.txt
 ```
-
-Service slugs: `software-development`, `technical-support`, `security-surveillance`, `networks-infrastructure`, `project-management`, `iot`.

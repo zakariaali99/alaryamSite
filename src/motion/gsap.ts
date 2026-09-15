@@ -17,6 +17,8 @@ export function initGSAP(): boolean {
   CustomEase.create('brandInOut', '0.76, 0, 0.24, 1');
 
   initialized = true;
+  ScrollTrigger.refresh();
+  window.__ALARYAM_MOTION_READY__ = true;
   return true;
 }
 

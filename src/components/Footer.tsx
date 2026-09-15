@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import { Container } from './Container';
 import { Logo } from './Logo';
+import { AppLink } from './AppLink';
 import { PeakLines } from './PeakLines';
 import { useLang, useT } from '../i18n/context';
 import { servicesData } from '../data/services';
@@ -101,12 +101,12 @@ export const Footer: React.FC = () => {
             <ul className="flex flex-col gap-2.5">
               {servicesData.map((s) => (
                 <li key={s.slug}>
-                  <Link
+                  <AppLink
                     to={`/${lang}/services/${s.slug}/`}
                     className="text-white/70 hover:text-white transition-colors text-[15px] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
                   >
                     {t(`services.${s.slug}.title`)}
-                  </Link>
+                  </AppLink>
                 </li>
               ))}
             </ul>
@@ -119,20 +119,20 @@ export const Footer: React.FC = () => {
             </h3>
             <ul className="flex flex-col gap-2.5">
               <li>
-                <Link
+                <AppLink
                   to={`/${lang}/about/`}
                   className="text-white/70 hover:text-white transition-colors text-[15px] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
                 >
                   {t('nav.about')}
-                </Link>
+                </AppLink>
               </li>
               <li>
-                <Link
+                <AppLink
                   to={`/${lang}/contact/`}
                   className="text-white/70 hover:text-white transition-colors text-[15px] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
                 >
                   {t('nav.contact')}
-                </Link>
+                </AppLink>
               </li>
             </ul>
           </div>

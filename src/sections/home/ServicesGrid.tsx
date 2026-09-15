@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '../../components/AppLink';
 import {
   Code2,
   Headset,
@@ -28,7 +28,7 @@ const ServiceCardItem: React.FC<{ service: ServiceItem; index: number }> = ({
   service,
   index,
 }) => {
-  const cardRef = useRef<HTMLAnchorElement | null>(null);
+  const cardRef = useRef<any>(null);
   useTilt(cardRef, 5);
 
   const { lang, isRtl } = useLang();
@@ -37,10 +37,11 @@ const ServiceCardItem: React.FC<{ service: ServiceItem; index: number }> = ({
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   return (
-    <Link
+    <AppLink
       ref={cardRef}
       to={`/${lang}/services/${service.slug}/`}
       data-reveal
+      aria-label={t(`services.${service.slug}.title`)}
       style={{ animationDelay: `${index * 80}ms` }}
       className="card-standard group flex flex-col justify-between focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
     >
@@ -66,7 +67,7 @@ const ServiceCardItem: React.FC<{ service: ServiceItem; index: number }> = ({
         <span>{t('cta.learnMore')}</span>
         <ArrowIcon size={18} strokeWidth={1.75} className="transition-transform" />
       </div>
-    </Link>
+    </AppLink>
   );
 };
 

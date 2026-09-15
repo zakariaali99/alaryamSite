@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from './AppLink';
 import { Container } from './Container';
 import { PeakLines } from './PeakLines';
 import { useLang, useT } from '../i18n/context';
@@ -148,15 +148,15 @@ export const PageHero: React.FC<PageHeroProps> = ({
             className="flex items-center gap-2 text-[14px] text-white/80 font-medium mb-4 breadcrumbs-nav"
             aria-label="Breadcrumb"
           >
-            <Link to={`/${lang}/`} className="hover:text-white transition-colors">
+            <AppLink to={`/${lang}/`} className="hover:text-white transition-colors">
               {t('nav.home')}
-            </Link>
+            </AppLink>
             <span className="opacity-60">{separator}</span>
             {breadcrumbParent && (
               <>
-                <Link to={breadcrumbParent.to} className="hover:text-white transition-colors">
+                <AppLink to={breadcrumbParent.to} className="hover:text-white transition-colors">
                   {breadcrumbParent.label}
-                </Link>
+                </AppLink>
                 <span className="opacity-60">{separator}</span>
               </>
             )}

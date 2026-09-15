@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-sitemap.js && vite-react-ssg build",
+    "build": "node scripts/generate-sitemap.js && vite-react-ssg build && node scripts/generate-404.js",
     "preview": "vite preview",
     "check:gradients": "! grep -rniE \"gradient|bg-clip-text|\\bfrom-|\\bvia-|backdrop-blur|\\bblur-|drop-shadow-|filter:\\s*blur\" src",
     "check:i18n": "node scripts/check-i18n.js",
     "check:hex": "node scripts/check-hex.js",
     "check:links": "node scripts/check-links.js",
+    "check:classes": "node scripts/check-classes.js",
     "package": "node scripts/package-release.js"
   },
   "dependencies": {

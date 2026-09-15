@@ -1,62 +1,60 @@
+// scripts/run-lighthouse.js
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-const chromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-process.env.CHROME_PATH = chromePath;
-
-const auditTargets = [
-  { url: 'http://localhost:4173/ar/', label: '/ar/ (desktop)', preset: 'desktop' },
-  { url: 'http://localhost:4173/ar/', label: '/ar/ (mobile)', preset: 'mobile' },
-  { url: 'http://localhost:4173/en/services/', label: '/en/services/ (desktop)', preset: 'desktop' },
-  { url: 'http://localhost:4173/en/services/', label: '/en/services/ (mobile)', preset: 'mobile' },
-  { url: 'http://localhost:4173/ar/contact/', label: '/ar/contact/ (desktop)', preset: 'desktop' },
-  { url: 'http://localhost:4173/ar/contact/', label: '/ar/contact/ (mobile)', preset: 'mobile' },
+const urls = [
+  { name: 'en-services', url: 'http://localhost:4173/en/services/' },
+  { name: 'ar-about', url: 'http://localhost:4173/ar/about/' },
+  { name: 'en-contact', url: 'http://localhost:4173/en/contact/' },
+  { name: 'ar-services-iot', url: 'http://localhost:4173/ar/services/iot/' },
 ];
 
 const results = [];
-const tmpJson = path.resolve('scripts/tmp-lh.json');
+const tmpDir = path.resolve(process.cwd(), 'scratch/lighthouse');
+fs.mkdirSync(tmpDir, { recursive: true });
 
-console.log('🚦 Starting Lighthouse audits...\n');
+for (const item of urls) {
+  for (const preset of ['desktop', 'mobile']) {
+    const jsonPath = path.join(tmpDir, `${item.name}-${preset}.json`);
+    const flags = preset === 'desktop'
+      ? '--preset=desktop --throttling.rttMs=40 --throttling.throughputKbps=10240 --throttling.cpuSlowdownMultiplier=1'
+      : '--throttling.rttMs=150 --throttling.throughputKbps=1638.4 --throttling.cpuSlowdownMultiplier=4';
 
-for (const target of auditTargets) {
-  const flags = [
-    target.url,
-    '--output=json',
-    `--output-path="${tmpJson}"`,
-    target.preset === 'desktop' ? '--preset=desktop' : '',
-    '--chrome-flags="--headless=new --no-sandbox"',
-    '--only-categories=performance,accessibility,best-practices,seo',
-    '--quiet',
-  ].filter(Boolean).join(' ');
+    console.log(`Running Lighthouse on ${item.url} (${preset})...`);
+    try {
+      execSync(
+        `npx lighthouse "${item.url}" --output=json --output-path="${jsonPath}" --chrome-flags="--headless" --only-categories=performance,accessibility,best-practices,seo ${flags} --quiet`,
+        { stdio: 'inherit' }
+      );
+      const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      const scores = {
+        url: item.url,
+        preset,
+        perf: Math.round((data.categories.performance?.score || 0) * 100),
+        a11y: Math.round((data.categories.accessibility?.score || 0) * 100),
+        bp: Math.round((data.categories['best-practices']?.score || 0) * 100),
+        seo: Math.round((data.categories.seo?.score || 0) * 100),
+      };
 
-  try {
-    execSync(`npx -y lighthouse ${flags}`, { stdio: 'pipe' });
-    const data = JSON.parse(fs.readFileSync(tmpJson, 'utf8'));
-    const perf = Math.round((data.categories.performance?.score || 0) * 100);
-    const a11y = Math.round((data.categories.accessibility?.score || 0) * 100);
-    const bp = Math.round((data.categories['best-practices']?.score || 0) * 100);
-    const seo = Math.round((data.categories.seo?.score || 0) * 100);
-    const cls = data.audits['cumulative-layout-shift']?.numericValue?.toFixed(3) || '0.000';
-
-    results.push({
-      target: target.label,
-      performance: perf,
-      accessibility: a11y,
-      bestPractices: bp,
-      seo: seo,
-      cls: cls,
-    });
-
-    console.log(`✅ ${target.label.padEnd(26)} | Perf: ${perf} | A11y: ${a11y} | BestPrac: ${bp} | SEO: ${seo} | CLS: ${cls}`);
-  } catch (err) {
-    console.error(`❌ Failed auditing ${target.label}:`, err.message);
+      // Check audits that failed SEO or A11y or BP
+      const failedAudits = [];
+      for (const [key, audit] of Object.entries(data.audits || {})) {
+        if (audit.score !== null && audit.score < 1 && ['is-on-https'].indexOf(key) === -1) {
+          if (['crawlable-anchors', 'link-text', 'document-title', 'meta-description', 'viewport', 'color-contrast', 'button-name', 'label'].includes(key)) {
+            failedAudits.push(`${key} (${audit.score})`);
+          }
+        }
+      }
+      scores.failed = failedAudits.join(', ');
+      results.push(scores);
+    } catch (err) {
+      console.error(`Error running lighthouse for ${item.name} (${preset}):`, err.message);
+    }
   }
 }
 
-if (fs.existsSync(tmpJson)) {
-  fs.unlinkSync(tmpJson);
-}
-
-console.log('\n📊 Summary Table:');
+console.log('\n--- LIGHTHOUSE RESULTS SUMMARY ---');
 console.table(results);
+
+fs.writeFileSync(path.join(tmpDir, 'summary.json'), JSON.stringify(results, null, 2));

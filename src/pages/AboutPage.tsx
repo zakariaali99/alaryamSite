@@ -121,8 +121,8 @@ export const AboutPage: React.FC = () => {
       <section className="bg-surface py-16 lg:py-24 border-y border-line">
         <Container>
           <div className="max-w-[720px] mb-14">
-            <h2 className="text-h2 text-ink mb-4">{t('home.services.title')}</h2>
-            <p className="text-lead text-muted">{t('about.intro')}</p>
+            <h2 className="text-h2 text-ink mb-4">{t('about.capabilitiesTitle')}</h2>
+            <p className="text-lead text-muted">{t('about.capabilitiesLead')}</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { Container } from '../components/Container';
 import { SeoHead } from '../components/SeoHead';
+import { Button } from '../components/Button';
 
 export const NotFoundPage: React.FC = () => {
   return (
@@ -10,6 +10,7 @@ export const NotFoundPage: React.FC = () => {
       <SeoHead
         title="404 — AL-ARYAM | الأريام"
         description="الصفحة غير موجودة / Page not found"
+        noindex={true}
       />
 
       <section className="py-16 lg:py-24 bg-surface min-h-[70vh] flex items-center justify-center">
@@ -65,12 +66,13 @@ c-2734 4903 -4977 8926 -4984 8940 -8 14 -14 23 -14 20z M12185 9718 c-2733 -4902 
             <p className="text-lead text-muted mb-6">
               ربما تم نقل الصفحة أو أن الرابط غير صحيح.
             </p>
-            <Link
+            <Button
               to="/ar/"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-button bg-brand-600 text-white font-bold text-[15px] hover:bg-brand-700 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/40"
+              variant="primary"
+              size="default"
             >
               العودة إلى الرئيسية
-            </Link>
+            </Button>
           </div>
 
           {/* Divider */}
@@ -82,15 +84,17 @@ c-2734 4903 -4977 8926 -4984 8940 -8 14 -14 23 -14 20z M12185 9718 c-2733 -4902 
             <p className="text-lead text-muted mb-6">
               The page may have moved, or the link is incorrect.
             </p>
-            <Link
+            <Button
               to="/en/"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-button bg-white text-ink border border-line font-bold text-[15px] hover:border-brand-600 hover:text-brand-600 transition-colors shadow-xs focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/40"
+              variant="secondary"
+              size="default"
             >
               Back to home
-            </Link>
+            </Button>
           </div>
         </Container>
       </section>
     </Layout>
   );
 };
+

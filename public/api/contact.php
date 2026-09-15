@@ -41,6 +41,25 @@ if (!is_array($data)) {
     exit;
 }
 
+// Helper functions to guard mb_* functions
+function str_len_utf8(string $str): int {
+    if (function_exists('mb_strlen')) {
+        return mb_strlen($str, 'UTF-8');
+    }
+    if (function_exists('iconv_strlen')) {
+        $len = iconv_strlen($str, 'UTF-8');
+        return $len !== false ? $len : strlen($str);
+    }
+    return strlen($str);
+}
+
+function encode_mime_header_utf8(string $subject): string {
+    if (function_exists('mb_encode_mimeheader')) {
+        return mb_encode_mimeheader($subject, 'UTF-8', 'B', "\r\n");
+    }
+    return '=?UTF-8?B?' . base64_encode($subject) . '?=';
+}
+
 // Extract and trim fields
 $name = trim((string)($data['name'] ?? ''));
 $email = trim((string)($data['email'] ?? ''));
@@ -48,8 +67,8 @@ $organization = trim((string)($data['organization'] ?? ''));
 $service = trim((string)($data['service'] ?? ''));
 $message = trim((string)($data['message'] ?? ''));
 $website = trim((string)($data['website'] ?? ''));
-$ts = isset($data['ts']) ? (float)$data['ts'] : 0;
-$lang = trim((string)($data['lang'] ?? 'ar'));
+$rawLang = trim((string)($data['lang'] ?? 'ar'));
+$lang = in_array($rawLang, ['ar', 'en'], true) ? $rawLang : 'ar';
 
 // Honeypot check: if filled, quietly return 200 without sending email
 if ($website !== '') {
@@ -57,21 +76,29 @@ if ($website !== '') {
     exit;
 }
 
-// Timestamp check: if submitted in under 3 seconds, quietly return 200
+// Timestamp validation: if missing, non-numeric, >60s future, <3s ago, or >24h old (86400s) -> quiet 200
+if (!isset($data['ts']) || !is_numeric($data['ts'])) {
+    echo json_encode(['ok' => true]);
+    exit;
+}
+
+$tsRaw = (float)$data['ts'];
+$submissionSeconds = $tsRaw > 100000000000 ? ($tsRaw / 1000) : $tsRaw;
 $nowSeconds = microtime(true);
-$submissionSeconds = $ts > 100000000000 ? ($ts / 1000) : $ts;
-if ($submissionSeconds > 0 && ($nowSeconds - $submissionSeconds) < 3) {
+$diff = $nowSeconds - $submissionSeconds;
+
+if ($diff < -60 || $diff < 3 || $diff > 86400) {
     echo json_encode(['ok' => true]);
     exit;
 }
 
 // Enforce maximum lengths
 if (
-    mb_strlen($name) > 100 ||
-    mb_strlen($email) > 254 ||
-    mb_strlen($organization) > 150 ||
-    mb_strlen($service) > 60 ||
-    mb_strlen($message) > 5000
+    str_len_utf8($name) > 100 ||
+    str_len_utf8($email) > 254 ||
+    str_len_utf8($organization) > 150 ||
+    str_len_utf8($service) > 60 ||
+    str_len_utf8($message) > 5000
 ) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'validation']);
@@ -79,7 +106,7 @@ if (
 }
 
 // Required fields validation
-if ($name === '' || $email === '' || $message === '' || mb_strlen($message) < 10) {
+if ($name === '' || $email === '' || $message === '' || str_len_utf8($message) < 10) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'validation']);
     exit;
@@ -110,14 +137,10 @@ if (!in_array($service, $allowedServices, true)) {
     exit;
 }
 
-// Client IP detection & rate limiting: 5 requests per IP per hour
-$clientIp = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-// In case of multiple IPs in X-Forwarded-For, take the first one
-if (strpos($clientIp, ',') !== false) {
-    $parts = explode(',', $clientIp);
-    $clientIp = trim($parts[0]);
-}
+// Client IP detection: use REMOTE_ADDR only (do not trust X-Forwarded-For)
+$clientIp = (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown');
 
+// Rate limiting: 5 requests per IP per hour
 $rateLimitDir = sys_get_temp_dir() . '/alaryam_rl';
 if (!is_dir($rateLimitDir)) {
     @mkdir($rateLimitDir, 0700, true);
@@ -161,7 +184,7 @@ $userAgent = (string)($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown');
 // Build email body
 $to = 'Info@Alaryam.ly';
 $subjectText = 'رسالة جديدة من الموقع — ' . $safeName;
-$encodedSubject = mb_encode_mimeheader($subjectText, 'UTF-8', 'B', "\r\n");
+$encodedSubject = encode_mime_header_utf8($subjectText);
 
 $body = "تفاصيل الرسالة الواردة من موقع الأريام:\n";
 $body .= "--------------------------------------------------\n";
@@ -193,7 +216,7 @@ $sent = @mail($to, $encodedSubject, $body, implode("\r\n", $headers));
 if ($sent) {
     echo json_encode(['ok' => true]);
 } else {
-    // In environments where mail() is not configured (e.g. localhost dev), respond with error or logged
+    // In environments where mail() is not configured (e.g. localhost dev), respond with error
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'server']);
 }

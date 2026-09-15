@@ -72,6 +72,8 @@ export const SmoothScroll: React.FC<SmoothScrollProps> = ({ children }) => {
     } else if (typeof window !== 'undefined') {
       window.scrollTo(0, 0);
     }
+    // Refresh ScrollTrigger so trigger positions match the newly loaded page
+    ScrollTrigger.refresh();
   }, [location.pathname]);
 
   return <>{children}</>;

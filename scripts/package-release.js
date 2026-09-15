@@ -25,17 +25,20 @@ console.log('\n--- Running quality checks ---');
 execSync('npm run check:i18n', { cwd: rootDir, stdio: 'inherit' });
 execSync('npm run check:hex', { cwd: rootDir, stdio: 'inherit' });
 execSync('npm run check:gradients', { cwd: rootDir, stdio: 'inherit' });
+execSync('npm run check:classes', { cwd: rootDir, stdio: 'inherit' });
 
 // 2. Build production site
 console.log('\n--- Building SSG production bundle ---');
 execSync('npm run build', { cwd: rootDir, stdio: 'inherit' });
 
-// 3. Ensure 404.html exists in dist root
-const nested404 = path.join(distDir, '404', 'index.html');
+// 3. Ensure 404.html exists in dist root and no dist/404/ duplicate exists
+const nested404Dir = path.join(distDir, '404');
 const flat404 = path.join(distDir, '404.html');
-if (fs.existsSync(nested404) && !fs.existsSync(flat404)) {
-  fs.copyFileSync(nested404, flat404);
-  console.log('✅ Copied 404/index.html -> 404.html');
+if (fs.existsSync(nested404Dir)) {
+  fs.rmSync(nested404Dir, { recursive: true, force: true });
+}
+if (fs.existsSync(flat404)) {
+  console.log('✅ Verified dist/404.html exists (zero /404/ duplicate)');
 }
 
 // 4. Ensure .htaccess is in dist root

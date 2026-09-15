@@ -162,15 +162,17 @@
     }
   },
   "about": {
-    "pageTitle": "About us",
+    "pageTitle": "About",
     "intro": "AL-ARYAM is a Libyan company providing professional services across a wide range of technical and engineering needs, supporting businesses and organizations with innovative, reliable solutions.",
+    "capabilitiesTitle": "Our capabilities",
+    "capabilitiesLead": "Technical and engineering expertise across the full project lifecycle.",
     "vision": {
       "label": "Our vision",
       "text": "To be the secure technical partner organizations rely on to build their digital future."
     },
     "mission": {
       "label": "Our mission",
-      "text": "To deliver integrated technical and engineering solutions that protect data and strengthen business efficiency and continuity."
+      "text": "Delivering integrated technical and engineering solutions that protect data and enhance business efficiency and continuity."
     },
     "values": {
       "title": "Our values"
@@ -190,6 +192,7 @@
     "pageTitle": "Contact us",
     "lead": "We'd love to hear from you. Send us a message and we'll get back to you soon.",
     "emailLabel": "Email",
+    "copyEmail": "Copy email",
     "copied": "Copied!"
   },
   "form": {

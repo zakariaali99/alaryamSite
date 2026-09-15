@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from './AppLink';
 import { useLang, useT } from '../i18n/context';
 
 interface LogoProps {
@@ -31,7 +31,7 @@ export const Logo: React.FC<LogoProps> = ({
     : (heightClass || 'h-[48px] lg:h-[60px]');
 
   return (
-    <Link
+    <AppLink
       to={`/${lang}/`}
       className={`inline-flex items-center flex-shrink-0 transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35 focus-visible:ring-offset-2 ${className}`}
       aria-label={fullName}
@@ -41,6 +41,6 @@ export const Logo: React.FC<LogoProps> = ({
         alt={fullName}
         className={`${defaultHeight} w-auto object-contain block`}
       />
-    </Link>
+    </AppLink>
   );
 };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import {
   Code2,
   Headset,
@@ -15,6 +14,7 @@ import { Layout } from '../components/Layout';
 import { Container } from '../components/Container';
 import { PageHero } from '../components/PageHero';
 import { SeoHead } from '../components/SeoHead';
+import { AppLink } from '../components/AppLink';
 import { CtaBand } from '../sections/home/CtaBand';
 import { useLang, useT } from '../i18n/context';
 import { servicesData } from '../data/services';
@@ -48,8 +48,8 @@ export const ServicesPage: React.FC = () => {
         breadcrumbCurrent={t('nav.services')}
       />
 
-      {/* Six large alternating rows */}
-      <section className="bg-white py-12 lg:py-16">
+      {/* Six large alternating rows - pb-0 so spacing before CTA band matches standard section rhythm */}
+      <section className="bg-white pt-12 lg:pt-16 pb-0">
         <Container>
           <div className="flex flex-col">
             {servicesData.map((service, index) => {
@@ -63,7 +63,7 @@ export const ServicesPage: React.FC = () => {
                 <div
                   key={service.slug}
                   data-reveal
-                  className="py-12 lg:py-16 border-b border-line last:border-b-0 first:pt-0"
+                  className="py-12 lg:py-16 border-b border-line last:border-b-0 last:pb-0 first:pt-0"
                 >
                   <div
                     className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center ${
@@ -115,16 +115,18 @@ export const ServicesPage: React.FC = () => {
                       </ul>
 
                       {/* Learn more link */}
-                      <Link
+                      <AppLink
                         to={`/${lang}/services/${service.slug}/`}
+                        aria-label={`${t('cta.learnMore')} — ${t(`services.${service.slug}.title`)}`}
                         className="inline-flex items-center gap-2 text-[16px] font-bold text-brand-600 hover:text-brand-700 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40 rounded-sm"
                       >
                         <span>{t('cta.learnMore')}</span>
+                        <span className="sr-only">: {t(`services.${service.slug}.title`)}</span>
                         <ArrowIcon
                           size={18}
                           className="transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
                         />
-                      </Link>
+                      </AppLink>
                     </div>
                   </div>
                 </div>

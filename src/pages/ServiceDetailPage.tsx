@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Code2,
   Headset,
@@ -15,6 +15,7 @@ import { Layout } from '../components/Layout';
 import { Container } from '../components/Container';
 import { PageHero } from '../components/PageHero';
 import { SeoHead } from '../components/SeoHead';
+import { AppLink } from '../components/AppLink';
 import { HowWeWork } from '../sections/home/HowWeWork';
 import { PeakLines } from '../components/PeakLines';
 import { Button } from '../components/Button';
@@ -143,13 +144,13 @@ export const ServiceDetailPage: React.FC = () => {
         <Container>
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-h2 text-ink">{t('services.otherServices')}</h2>
-            <Link
+            <AppLink
               to={`/${lang}/services/`}
               className="text-[15px] font-bold text-brand-600 hover:text-brand-700 transition-colors flex items-center gap-1.5"
             >
               <span>{t('cta.services')}</span>
               <ArrowIcon size={16} />
-            </Link>
+            </AppLink>
           </div>
 
           <div
@@ -159,7 +160,7 @@ export const ServiceDetailPage: React.FC = () => {
             {otherServices.map((other) => {
               const OtherIcon = iconMap[other.iconName];
               return (
-                <Link
+                <AppLink
                   key={other.slug}
                   to={`/${lang}/services/${other.slug}/`}
                   className="card-standard min-w-[260px] lg:min-w-0 flex-1 snap-start flex flex-col justify-between group p-6 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
@@ -182,7 +183,7 @@ export const ServiceDetailPage: React.FC = () => {
                       className="transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
                     />
                   </div>
-                </Link>
+                </AppLink>
               );
             })}
           </div>
@@ -192,7 +193,7 @@ export const ServiceDetailPage: React.FC = () => {
       {/* Service-specific CTA Band */}
       <section className="bg-white py-12 lg:py-16">
         <Container>
-          <div className="relative w-full rounded-band bg-brand-600 text-white overflow-hidden py-14 lg:py-16 px-8 lg:px-14 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+          <div className="relative w-full rounded-cta bg-brand-600 text-white overflow-hidden py-14 lg:py-16 px-8 lg:px-14 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
             <div className="absolute top-0 end-0 h-full flex items-center justify-end opacity-60 pointer-events-none z-0">
               <PeakLines token="brand-800" width={320} height={240} lines={5} />
             </div>

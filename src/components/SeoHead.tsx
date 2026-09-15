@@ -6,6 +6,7 @@ interface SeoHeadProps {
   title?: string;
   description?: string;
   path?: string;
+  noindex?: boolean;
   jsonLd?: Record<string, any> | Array<Record<string, any>>;
 }
 
@@ -13,6 +14,7 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
   title,
   description,
   path = '/',
+  noindex = false,
   jsonLd,
 }) => {
   const { lang, dir } = useLang();
@@ -39,6 +41,7 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
       <html lang={lang} dir={dir} />
       <title>{pageTitle}</title>
       <meta name="description" content={pageDesc} />
+      {noindex && <meta name="robots" content="noindex, follow" />}
       <link rel="canonical" href={canonicalUrl} />
 
       {/* hreflang alternates: each page points to its localized counterpart */}

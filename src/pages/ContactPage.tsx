@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Mail, Copy, Check, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Copy, Check, AlertCircle } from 'lucide-react';
 import { Layout } from '../components/Layout';
 import { Container } from '../components/Container';
 import { PageHero } from '../components/PageHero';
 import { SeoHead } from '../components/SeoHead';
 import { PeakLines } from '../components/PeakLines';
+import { Button } from '../components/Button';
 import { useLang, useT } from '../i18n/context';
 import { servicesData } from '../data/services';
 
@@ -130,18 +131,6 @@ export const ContactPage: React.FC = () => {
 
     setIsSubmitting(true);
 
-    if ((import.meta as any).env?.DEV) {
-      // Dev mode: simulate network delay and success per §3.5
-      console.log('DEV contact form submitted payload:', {
-        ...formState,
-        lang,
-      });
-      await new Promise((resolve) => setTimeout(resolve, 900));
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      return;
-    }
-
     try {
       const response = await fetch('/api/contact.php', {
         method: 'POST',
@@ -220,24 +209,16 @@ export const ContactPage: React.FC = () => {
                 </a>
 
                 {/* Copy Email Button */}
-                <button
+                <Button
                   type="button"
+                  size="sm"
+                  variant="secondary"
                   onClick={handleCopyEmail}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-button text-[14px] font-bold bg-white text-ink border border-line shadow-xs hover:border-brand-600 hover:text-brand-600 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40"
+                  icon={copied ? <Check size={16} className="text-brand-600" /> : <Copy size={16} />}
                   aria-label="Copy email address"
                 >
-                  {copied ? (
-                    <>
-                      <Check size={16} className="text-brand-600" />
-                      <span className="text-brand-600">{t('contact.copied')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={16} />
-                      <span>{t('contact.copied') ? 'نسخ البريد' : 'Copy'}</span>
-                    </>
-                  )}
-                </button>
+                  {copied ? t('contact.copied') : t('contact.copyEmail')}
+                </Button>
               </div>
 
               {/* Quiet PeakLines below email card */}
@@ -438,7 +419,7 @@ export const ContactPage: React.FC = () => {
                         }
                         className="w-full h-14 px-4 pt-4 pb-1 text-ink bg-surface border border-line rounded-card transition-colors focus:outline-none focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 appearance-none"
                       >
-                        <option value="">{t('form.service')}</option>
+                        <option value="">—</option>
                         {servicesData.map((s) => (
                           <option key={s.slug} value={s.slug}>
                             {t(`services.${s.slug}.title`)}
@@ -499,20 +480,16 @@ export const ContactPage: React.FC = () => {
 
                     {/* Submit Button */}
                     <div>
-                      <button
+                      <Button
                         type="submit"
-                        disabled={isSubmitting}
-                        className="w-full h-14 rounded-button bg-brand-600 text-white font-bold text-[16px] flex items-center justify-center gap-2 shadow-sm hover:bg-brand-700 active:scale-[0.98] transition-all disabled:opacity-70 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/40"
+                        variant="primary"
+                        size="default"
+                        loading={isSubmitting}
+                        loadingText={t('form.sending')}
+                        className="w-full"
                       >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 size={20} className="animate-spin" />
-                            <span>{t('form.sending')}</span>
-                          </>
-                        ) : (
-                          <span>{t('form.submit')}</span>
-                        )}
-                      </button>
+                        {t('form.submit')}
+                      </Button>
                     </div>
                   </form>
                 )}

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Mail, X } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Mail, X, Languages } from 'lucide-react';
 import gsap from 'gsap';
 import { Container } from './Container';
 import { Logo } from './Logo';
 import { Button } from './Button';
+import { AppLink, AppNavLink } from './AppLink';
 import { PeakLines } from './PeakLines';
 import { useLang, useT } from '../i18n/context';
 
@@ -280,7 +281,7 @@ export const Header: React.FC = () => {
             aria-label="Main Navigation"
           >
             {navItems.map((item) => (
-              <NavLink
+              <AppNavLink
                 key={item.to}
                 to={item.to}
                 end={item.exact}
@@ -293,19 +294,20 @@ export const Header: React.FC = () => {
                 }
               >
                 {item.label}
-              </NavLink>
+              </AppNavLink>
             ))}
           </nav>
 
           {/* Desktop Lang Switch + CTA */}
           <div className="hidden lg:flex items-center gap-6">
-            <Link
+            <AppLink
               to={switchLangUrl}
-              className="text-[15px] font-bold text-body hover:text-brand-600 transition-colors py-1.5 px-2 rounded focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
+              className="inline-flex items-center gap-1.5 text-[15px] font-bold text-body hover:text-brand-600 transition-colors py-1.5 px-2 rounded focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
               aria-label="Switch Language"
             >
-              {t('nav.langSwitch')}
-            </Link>
+              <Languages size={18} strokeWidth={1.75} className="text-brand-600 flex-shrink-0" />
+              <span>{t('nav.langSwitch')}</span>
+            </AppLink>
 
             <Button to={`/${lang}/contact/`} size="header" variant="primary" className="magnetic-btn">
               {t('cta.contact')}
@@ -314,13 +316,14 @@ export const Header: React.FC = () => {
 
           {/* Mobile controls: Lang switch + 44x44 Hamburger */}
           <div className="flex lg:hidden items-center gap-2">
-            <Link
+            <AppLink
               to={switchLangUrl}
-              className="text-[14px] font-bold text-body hover:text-brand-600 px-2 py-1.5 rounded focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
+              className="inline-flex items-center gap-1 text-[14px] font-bold text-body hover:text-brand-600 px-2 py-1.5 rounded focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35"
               aria-label="Switch Language"
             >
-              {t('nav.langSwitch')}
-            </Link>
+              <Languages size={16} strokeWidth={1.75} className="text-brand-600 flex-shrink-0" />
+              <span>{t('nav.langSwitch')}</span>
+            </AppLink>
 
             <button
               ref={hamburgerBtnRef}
@@ -392,7 +395,7 @@ export const Header: React.FC = () => {
           {/* Nav Links: 22px/700, 64px rows with active indicator */}
           <div ref={navListRef} className="flex flex-col py-2">
             {navItems.map((item) => (
-              <NavLink
+              <AppNavLink
                 key={item.to}
                 to={item.to}
                 end={item.exact}
@@ -417,19 +420,21 @@ export const Header: React.FC = () => {
                     <span>{item.label}</span>
                   </>
                 )}
-              </NavLink>
+              </AppNavLink>
             ))}
           </div>
 
           {/* Action section: Lang switch + Full-width Contact button */}
           <div className="p-6 flex flex-col gap-4 border-t border-line/60">
-            <Link
+            <AppLink
               to={switchLangUrl}
               onClick={() => setDrawerOpen(false)}
-              className="text-[16px] font-bold text-body hover:text-brand-600 py-1 inline-flex items-center"
+              className="text-[16px] font-bold text-body hover:text-brand-600 py-1 inline-flex items-center gap-2"
+              aria-label="Switch Language"
             >
-              🌐 {t('nav.langSwitch')}
-            </Link>
+              <Languages size={18} strokeWidth={1.75} className="text-brand-600 flex-shrink-0" />
+              <span>{t('nav.langSwitch')}</span>
+            </AppLink>
 
             <Button
               to={`/${lang}/contact/`}
