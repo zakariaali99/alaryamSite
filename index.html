@@ -6,7 +6,23 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <title>شركة الأريام — الشريك التقني الآمن</title>
+    
+    <!-- No-JS & Motion-safety pre-paint detection -->
+    <script>
+      (function() {
+        var docEl = document.documentElement;
+        docEl.classList.add('js');
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+          docEl.classList.add('motion-ok');
+        }
+        // Failsafe: if motion system fails or takes >2.5s, reveal all content unconditionally
+        setTimeout(function() {
+          if (!window.__ALARYAM_MOTION_READY__) {
+            docEl.classList.remove('motion-ok');
+          }
+        }, 2500);
+      })();
+    </script>
   </head>
   <body class="bg-white text-body font-cairo antialiased selection:bg-brand-100 selection:text-brand-800">
     <div id="root"></div>

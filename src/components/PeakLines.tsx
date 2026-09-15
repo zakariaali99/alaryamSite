@@ -1,8 +1,18 @@
 import React from 'react';
 import { useLang } from '../i18n/context';
 
+export type PeakLinesToken =
+  | 'brand-50'
+  | 'brand-100'
+  | 'brand-600'
+  | 'brand-700'
+  | 'brand-800'
+  | 'white'
+  | 'line'
+  | 'currentColor';
+
 interface PeakLinesProps {
-  color?: string;
+  token?: PeakLinesToken;
   className?: string;
   lines?: number;
   width?: number;
@@ -10,7 +20,7 @@ interface PeakLinesProps {
 }
 
 export const PeakLines: React.FC<PeakLinesProps> = ({
-  color = 'currentColor',
+  token = 'brand-800',
   className = '',
   lines = 4,
   width = 280,
@@ -25,6 +35,8 @@ export const PeakLines: React.FC<PeakLinesProps> = ({
   const baseY = height - 10;
   const topY = 10;
 
+  const colorVal = token === 'currentColor' ? 'currentColor' : `var(--${token})`;
+
   const strokes = [];
   for (let i = 0; i < lines; i++) {
     const xBase = startX + i * spacing;
@@ -36,9 +48,10 @@ export const PeakLines: React.FC<PeakLinesProps> = ({
         y1={topY}
         x2={xBase}
         y2={baseY}
-        stroke={color}
+        stroke={colorVal}
         strokeWidth="2"
         strokeLinecap="square"
+        className="peak-line-stroke"
       />
     );
   }
@@ -57,17 +70,16 @@ export const PeakLines: React.FC<PeakLinesProps> = ({
       }}
       aria-hidden="true"
     >
-      {/* Parallel slanted strokes at ~60.9° meeting baseline */}
       {strokes}
-      {/* Horizontal baseline */}
       <line
         x1="0"
         y1={baseY}
         x2={width}
         y2={baseY}
-        stroke={color}
+        stroke={colorVal}
         strokeWidth="2"
         strokeLinecap="square"
+        className="peak-line-base"
       />
     </svg>
   );

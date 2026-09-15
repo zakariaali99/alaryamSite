@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Layout } from '../components/Layout';
 import { SeoHead } from '../components/SeoHead';
 import { Hero } from '../sections/home/Hero';
@@ -7,59 +7,41 @@ import { HowWeWork } from '../sections/home/HowWeWork';
 import { WhoWeServe } from '../sections/home/WhoWeServe';
 import { WhyUs } from '../sections/home/WhyUs';
 import { CtaBand } from '../sections/home/CtaBand';
-import { useLang, useT } from '../i18n/context';
+import { useT } from '../i18n/context';
+import { useReveal } from '../motion/useReveal';
 
 export const HomePage: React.FC = () => {
-  const { lang } = useLang();
   const t = useT();
+  const mainRef = useRef<HTMLDivElement | null>(null);
+  useReveal(mainRef);
 
-  // Scroll reveal setup
-  useEffect(() => {
-    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return;
-
-    const elements = document.querySelectorAll('.reveal-on-scroll');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('reveal-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'AL-ARYAM',
+    alternateName: 'الأريام',
+    url: 'https://alaryam.ly',
+    logo: 'https://alaryam.ly/brand/logo-full-blue.svg',
+    email: 'Info@Alaryam.ly',
+    areaServed: 'LY',
+  };
 
   return (
     <Layout>
       <SeoHead
+        path="/"
         title={t('seo.home.title')}
         description={t('seo.home.description')}
-        canonicalPath={`/${lang}/`}
+        jsonLd={organizationJsonLd}
       />
 
-      <div>
+      <div ref={mainRef}>
         <Hero />
-        <div className="reveal-on-scroll reveal-init">
-          <ServicesGrid />
-        </div>
-        <div className="reveal-on-scroll reveal-init">
-          <HowWeWork />
-        </div>
-        <div className="reveal-on-scroll reveal-init">
-          <WhoWeServe />
-        </div>
-        <div className="reveal-on-scroll reveal-init">
-          <WhyUs />
-        </div>
-        <div className="reveal-on-scroll reveal-init">
-          <CtaBand />
-        </div>
+        <ServicesGrid />
+        <HowWeWork />
+        <WhoWeServe />
+        <WhyUs />
+        <CtaBand />
       </div>
     </Layout>
   );

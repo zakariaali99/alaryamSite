@@ -2,29 +2,32 @@
 
 | # | Plan | Status |
 |---|---|---|
-| 01 | Foundation + logo SVGs + **Home page only** (AR + EN) | ▶️ **Run now** — then STOP for visual approval |
-| 02 | Services, service detail, About, Contact (+ PHP endpoint), 404 | ⏳ Written after 01 is approved |
-| 03 | SEO polish, `.htaccess`, production build, cPanel deploy package | ⏳ Written after 02 is approved |
+| 01 | Foundation + logo SVGs + Home page (AR + EN) | ✅ Done (`d6a628d`) — reviewed in `reviews/001` |
+| 02 | **ONE RUN:** review fixes · mobile side drawer · Services, 6 service pages, About, Contact (+ PHP), 404 · SEO · **full motion system** · `.htaccess` + deploy package | ▶️ **Run now** — stop only at the end |
 
-## Owner decisions (2026-09-15)
-- Logo: blue triangle + "AL-ARYAM — Technical partner" (`brand-source/alaryam-logo-cropped.png`). Primary blue `#0D07AD`.
-- English name: **AL-ARYAM**. Arabic: **شركة الأريام**.
-- Bilingual: Arabic (default, RTL) + English.
-- Light theme only.
-- Contact: **email only** — `Info@Alaryam.ly`. No phone, address, map, or social links.
-- Hosting: **cPanel** (Apache + PHP). Domain `alaryam.ly` just renewed.
-- Stack: Vite + React + TS + Tailwind + `vite-react-ssg` (see `ANTIGRAVITY.md`).
+## Owner decisions
+- **2026-09-15 (initial):**
+  - Logo: blue triangle + "AL-ARYAM — Technical partner" (`public/brand/`). Primary blue `#0D07AD`.
+  - English name **AL-ARYAM**; Arabic **شركة الأريام**.
+  - Bilingual: Arabic (default, RTL) + English.
+  - Light theme only.
+  - Contact: **email only** — `Info@Alaryam.ly`. No phone, address, map, or social links.
+  - Hosting: **cPanel** (Apache + PHP). Domain `alaryam.ly` just renewed.
+- **2026-09-15 (update):**
+  - **Premium transitions, animated movement and effects** across the whole site.
+  - **Mobile nav = side drawer** (right in Arabic, left in English) — never a top dropdown.
+  - **Finish the rest of the site in one run.**
 
 ## Site map (final)
 ```
-/                  → redirects to /ar/
+/                                  → 301 to /ar/
 /ar/  /en/                         Home
 /ar/services/  /en/services/       Services overview
 /ar/services/:slug/  (6 slugs)     Service detail
 /ar/about/  /en/about/             About
 /ar/contact/  /en/contact/         Contact (form → /api/contact.php)
-404 (bilingual)
+/404.html                          Bilingual 404
+/sitemap.xml  /robots.txt
 ```
 
-## Why the visual approval gate exists
-A previous project lost three full rounds because a visual direction was applied to every page before the owner saw one. **Plan 01 builds one page. Nothing else gets styled until the owner approves the screenshots.**
+Service slugs: `software-development`, `technical-support`, `security-surveillance`, `networks-infrastructure`, `project-management`, `iot`.

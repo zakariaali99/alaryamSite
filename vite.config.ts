@@ -1,6 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const serviceSlugs = [
+  'software-development',
+  'technical-support',
+  'security-surveillance',
+  'networks-infrastructure',
+  'project-management',
+  'iot',
+];
+
 export default defineConfig({
   plugins: [react()],
   ssgOptions: {
@@ -8,17 +17,15 @@ export default defineConfig({
     dirStyle: 'nested',
     formatting: 'none',
     includedRoutes(paths) {
-      return [
-        '/',
-        '/ar',
-        '/en',
-        '/ar/services',
-        '/en/services',
-        '/ar/about',
-        '/en/about',
-        '/ar/contact',
-        '/en/contact',
-      ];
+      const localized = ['ar', 'en'].flatMap((lang) => [
+        `/${lang}`,
+        `/${lang}/services`,
+        ...serviceSlugs.map((slug) => `/${lang}/services/${slug}`),
+        `/${lang}/about`,
+        `/${lang}/contact`,
+      ]);
+
+      return ['/', ...localized, '/404'];
     },
     onPageRendered(route, renderedHTML) {
       // Ensure html lang and dir attributes match route

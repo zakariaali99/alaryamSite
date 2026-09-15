@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useMagnetic } from '../motion/useMagnetic';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'on-blue-primary' | 'on-blue-secondary';
 export type ButtonSize = 'default' | 'header' | 'sm';
@@ -27,8 +28,11 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   disabled = false,
 }) => {
+  const elRef = useRef<any>(null);
+  useMagnetic(elRef, 8);
+
   const baseClasses =
-    'inline-flex items-center justify-center font-bold rounded-btn transition-colors duration-200 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none select-none text-center';
+    'inline-flex items-center justify-center font-bold rounded-btn transition-colors duration-200 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/35 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none select-none text-center active:scale-[0.97] will-change-transform';
 
   const sizeClasses =
     size === 'header'
@@ -60,7 +64,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   if (to) {
     return (
-      <Link to={to} className={combined}>
+      <Link ref={elRef} to={to} className={combined}>
         {children}
       </Link>
     );
@@ -68,14 +72,14 @@ export const Button: React.FC<ButtonProps> = ({
 
   if (href) {
     return (
-      <a href={href} className={combined}>
+      <a ref={elRef} href={href} className={combined}>
         {children}
       </a>
     );
   }
 
   return (
-    <button type={type} onClick={onClick} className={combined} disabled={disabled}>
+    <button ref={elRef} type={type} onClick={onClick} className={combined} disabled={disabled}>
       {children}
     </button>
   );

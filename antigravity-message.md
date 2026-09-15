@@ -1,17 +1,20 @@
-# Message to paste into Antigravity (plan 01)
+# Message to paste into Antigravity (plan 02 — one run)
 
 ```
-You are building the official website for AL-ARYAM at:
-/Users/zakaria/projects/Claude/Alaryam/ourSite
+Plan 01 is reviewed and approved as the base. The scope has changed: finish the whole site in ONE run.
 
-Work ONLY inside that folder. Do not open, copy from, or link to anything outside it.
+Project: /Users/zakaria/projects/Claude/Alaryam/ourSite — work ONLY inside this folder.
 
-1. Read ANTIGRAVITY.md fully (rules, stack, workflow).
-2. Read KNOWLEDGE-content.md — this is all the site copy, Arabic + English. Use it verbatim; never invent facts, numbers, clients, or contact details.
-3. Read plans/00-overall.md for the roadmap.
-4. Implement plans/01-foundation-and-home.md — and ONLY that plan.
+Read, in this order:
+1. ANTIGRAVITY.md — it has been UPDATED (new motion rules, mobile side-drawer rule, one-run rule). Read it fully again.
+2. reviews/001-plan-01-review.md — the issues to fix.
+3. plans/00-overall.md — updated roadmap.
+4. plans/02-full-site-motion-launch.md — implement ALL of it, end to end, in the order of its section 0. Do not stop between sections.
 
-Non-negotiables: zero gradients, no glassmorphism or glow, no stock photos, light theme only, the logo is the blue triangle "AL-ARYAM — Technical partner" from brand-source/ (vectorized, never redrawn), the only contact is Info@Alaryam.ly.
+Critical points:
+- Mobile menu is a SIDE DRAWER: it slides in from the RIGHT in Arabic and from the LEFT in English, full height, with a backdrop. It must never drop down from the top. Your current Header.tsx dropdown must be replaced.
+- Motion must be premium on every page (GSAP + ScrollTrigger + SplitText + DrawSVG + Lenis + View Transitions), exactly as specified in plan 02 section 6 — but content must stay visible without JS, everything must turn off under prefers-reduced-motion, and Arabic text is split by WORDS only, never characters.
+- Still zero gradients, no glassmorphism/glow/particles, no invented facts, email-only contact (Info@Alaryam.ly), copy verbatim from KNOWLEDGE-content.md, keep React 18.
 
-When done: run every check in Step 8, save the screenshots listed in Step 9, write summaries/01-foundation-and-home.md, commit, and STOP. Do not start plan 02.
+When everything is done: run every check in section 8, save the screenshots and recordings in section 9, write summaries/02-full-site-motion-launch.md, commit, and STOP. Do not deploy.
 ```

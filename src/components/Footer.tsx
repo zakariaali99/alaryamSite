@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import { Container } from './Container';
@@ -6,24 +6,87 @@ import { Logo } from './Logo';
 import { PeakLines } from './PeakLines';
 import { useLang, useT } from '../i18n/context';
 import { servicesData } from '../data/services';
+import { gsap } from '../motion/gsap';
 
 export const Footer: React.FC = () => {
   const { lang } = useLang();
   const t = useT();
   const currentYear = new Date().getFullYear();
 
+  const footerRef = useRef<HTMLElement | null>(null);
+  const peaklinesRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !footerRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const ctx = gsap.context(() => {
+      // PeakLines DrawSVG when footer enters viewport
+      if (peaklinesRef.current) {
+        const lines = peaklinesRef.current.querySelectorAll('.peak-line-stroke, .peak-line-base');
+        if (lines.length > 0) {
+          gsap.fromTo(
+            lines,
+            { drawSVG: '0%' },
+            {
+              drawSVG: '100%',
+              duration: 0.8,
+              stagger: 0.08,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: footerRef.current,
+                start: 'top 85%',
+                once: true,
+              },
+            }
+          );
+        }
+      }
+
+      // Staggered column reveals
+      const cols = footerRef.current?.querySelectorAll('[data-reveal]');
+      if (cols && cols.length > 0) {
+        gsap.fromTo(
+          cols,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: 'brand',
+            scrollTrigger: {
+              trigger: footerRef.current,
+              start: 'top 85%',
+              once: true,
+            },
+          }
+        );
+      }
+    }, footerRef);
+
+    return () => {
+      ctx.revert();
+    };
+  }, []);
+
   return (
-    <footer className="relative bg-ink text-white pt-12 pb-10 overflow-hidden">
+    <footer ref={footerRef} className="relative bg-ink text-white pt-12 pb-10 overflow-hidden">
       {/* PeakLines decoration along top edge in brand-800 */}
-      <div className="absolute top-0 start-0 w-full overflow-hidden flex justify-start opacity-70 pointer-events-none">
-        <PeakLines color="#070470" width={320} height={70} lines={5} />
+      <div
+        ref={peaklinesRef}
+        className="absolute top-0 start-0 w-full overflow-hidden flex justify-start opacity-70 pointer-events-none footer-peaklines"
+      >
+        <PeakLines token="brand-800" width={320} height={70} lines={5} />
       </div>
 
       <Container className="relative z-10">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 border-b border-white/10">
           {/* Brand & Blurb (lg: 4 cols) */}
-          <div className="lg:col-span-4 flex flex-col items-start gap-4">
+          <div data-reveal className="lg:col-span-4 flex flex-col items-start gap-4 will-change-transform">
             <Logo variant="full" color="white" heightClass="h-[72px] lg:h-[96px]" />
             <p className="text-white/75 text-[15px] leading-relaxed max-w-[340px] pt-1">
               {t('footer.blurb')}
@@ -31,7 +94,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Services Column (lg: 4 cols) */}
-          <div className="lg:col-span-4 flex flex-col gap-3">
+          <div data-reveal className="lg:col-span-4 flex flex-col gap-3 will-change-transform">
             <h3 className="text-[17px] font-bold text-white mb-1">
               {t('nav.services')}
             </h3>
@@ -50,7 +113,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Company Column (lg: 2 cols) */}
-          <div className="lg:col-span-2 flex flex-col gap-3">
+          <div data-reveal className="lg:col-span-2 flex flex-col gap-3 will-change-transform">
             <h3 className="text-[17px] font-bold text-white mb-1">
               {t('about.pageTitle')}
             </h3>
@@ -75,7 +138,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Contact Column (lg: 2 cols) */}
-          <div className="lg:col-span-2 flex flex-col gap-3">
+          <div data-reveal className="lg:col-span-2 flex flex-col gap-3 will-change-transform">
             <h3 className="text-[17px] font-bold text-white mb-1">
               {t('contact.emailLabel')}
             </h3>

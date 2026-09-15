@@ -55,34 +55,34 @@
       "title": "Who we serve",
       "item1": {
         "title": "Organizations",
-        "text": "systems and networks that protect data and keep operations running."
+        "text": "Systems and networks that protect data and keep operations running."
       },
       "item2": {
         "title": "Businesses",
-        "text": "applications and smart solutions that raise efficiency."
+        "text": "Applications and smart solutions that raise efficiency."
       },
       "item3": {
         "title": "Government entities",
-        "text": "secure, integrated solutions from design to operation."
+        "text": "Secure, integrated solutions from design to operation."
       }
     },
     "whyUs": {
       "title": "Why AL-ARYAM",
       "item1": {
         "title": "Security first",
-        "text": "every solution is designed to keep your data safe."
+        "text": "Every solution is designed to keep your data safe."
       },
       "item2": {
         "title": "Integrated solutions",
-        "text": "software, networks, and security systems under one roof."
+        "text": "Software, networks, and security systems under one roof."
       },
       "item3": {
         "title": "Ongoing support",
-        "text": "we stay with you after delivery so your systems keep running efficiently."
+        "text": "We stay with you after delivery so your systems keep running efficiently."
       },
       "item4": {
         "title": "Quality delivery",
-        "text": "the highest quality standards at every stage."
+        "text": "The highest quality standards at every stage."
       }
     },
     "cta": {
@@ -166,11 +166,11 @@
     "intro": "AL-ARYAM is a Libyan company providing professional services across a wide range of technical and engineering needs, supporting businesses and organizations with innovative, reliable solutions.",
     "vision": {
       "label": "Our vision",
-      "text": "to be the secure technical partner organizations rely on to build their digital future."
+      "text": "To be the secure technical partner organizations rely on to build their digital future."
     },
     "mission": {
       "label": "Our mission",
-      "text": "to deliver integrated technical and engineering solutions that protect data and strengthen business efficiency and continuity."
+      "text": "To deliver integrated technical and engineering solutions that protect data and strengthen business efficiency and continuity."
     },
     "values": {
       "title": "Our values"
@@ -178,7 +178,7 @@
     "capabilities": {
       "tech": {
         "title": "Integrated technical solutions",
-        "text": "web and mobile app development and maintenance · design and implementation of secure networks and IT systems · specialist technical support and consulting."
+        "text": "Web and mobile app development and maintenance · design and implementation of secure networks and IT systems · specialist technical support and consulting."
       },
       "eng": {
         "title": "Advanced engineering services",
@@ -189,7 +189,8 @@
   "contact": {
     "pageTitle": "Contact us",
     "lead": "We'd love to hear from you. Send us a message and we'll get back to you soon.",
-    "emailLabel": "Email"
+    "emailLabel": "Email",
+    "copied": "Copied!"
   },
   "form": {
     "name": "Name",
@@ -201,9 +202,11 @@
     "submit": "Send message",
     "sending": "Sending…",
     "success": "Thank you — your message has arrived and we'll be in touch soon.",
+    "sendAnother": "Send another message",
     "error": "Your message couldn't be sent. Please try again or email us at Info@Alaryam.ly",
     "required": "This field is required",
-    "invalidEmail": "Enter a valid email address"
+    "invalidEmail": "Enter a valid email address",
+    "messageMinLength": "Message must be at least 10 characters"
   },
   "notFound": {
     "title": "Page not found",
@@ -228,9 +231,5 @@
       "description": "We'd love to hear from you. Send us a message and we'll get back to you soon."
     },
     "serviceSuffix": "— AL-ARYAM"
-  },
-  "comingNext": {
-    "badge": "Coming Soon",
-    "message": "This page is currently under development and will be available soon."
   }
 }

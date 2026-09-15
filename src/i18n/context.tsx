@@ -16,14 +16,14 @@ interface I18nContextValue {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function getNestedValue(obj: any, path: string): string | undefined {
+function getNestedValue(obj: any, path: string): any {
   const parts = path.split('.');
   let curr = obj;
   for (const p of parts) {
     if (curr === undefined || curr === null) return undefined;
     curr = curr[p];
   }
-  return typeof curr === 'string' ? curr : undefined;
+  return curr;
 }
 
 export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -49,15 +49,20 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const dict = lang === 'ar' ? arData : enData;
 
   const t = useMemo(() => {
-    return (key: string, params?: Record<string, string | number>): string => {
+    return (key: string, params?: Record<string, string | number>): any => {
       let val = getNestedValue(dict, key);
-      if (!val) {
-        val = getNestedValue(arData, key) || key;
+      if (val === undefined) {
+        val = getNestedValue(arData, key);
       }
-      if (params) {
+      if (val === undefined) {
+        return key;
+      }
+      if (typeof val === 'string' && params) {
+        let str = val;
         for (const [k, v] of Object.entries(params)) {
-          val = val.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+          str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
         }
+        return str;
       }
       return val;
     };
