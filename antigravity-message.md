@@ -1,23 +1,21 @@
-# Message to paste into Antigravity (plan 03 — one run)
+# Message to paste into the implementer (plan 04 — one run)
 
 ```
-Plan 02 is reviewed. Good progress, but it is not launch-ready. Fix everything in ONE run.
+Plan 03 is reviewed: 14 of 18 issues are verified fixed — good work. A few things remain. Finish them in ONE run.
 
 Project: /Users/zakaria/projects/Claude/Alaryam/ourSite — work ONLY inside this folder.
 
 Read, in this order:
-1. reviews/002-plan-02-review.md — 18 issues, including 4 critical ones.
-2. plans/03-fixes-and-polish.md — implement ALL of it, sections 1 to 12, without stopping.
+1. reviews/003-plan-03-review.md
+2. plans/04-final-fixes.md — implement ALL of it (sections 1 to 6) without stopping.
 
-The critical ones:
-- Page transitions were never implemented (no viewTransition on any link, no sweep CSS) even though summary 02 says they were. Implement them for real.
-- window.__ALARYAM_MOTION_READY__ is never set, so the 2.5s failsafe always strips motion-ok and scroll reveals pop instead of animating.
-- rounded-button and rounded-band are not Tailwind classes, so the contact/404 buttons and the service CTA band are square. Add a check:classes script, fix every undefined class, and route every button through the shared Button component with the hover-fill layer.
-- The "contact success" screenshot actually shows the error banner. Capture real success and error states by intercepting the PHP request.
+The key points:
+- Page transitions STILL don't fire: AppLink passes `unstable_viewTransition`, but react-router-dom 6.30.6 only supports `viewTransition` (grep shows 0 occurrences of unstable_viewTransition in node_modules). Use the real prop, then PROVE it in the browser with the startViewTransition counter and 80ms frames showing the blue blade.
+- services-en-1440.png is blank below the hero because full-page screenshots were taken without scrolling. Scroll through before every capture, and add the hidden-element count check — every page must report 0.
+- 404.html still has canonical/hreflang pointing to the home page — remove them.
+- The .mp4 files are 3fps slideshows of still frames, not recordings. Record real video with Puppeteer screencast, or say plainly that it failed.
 
-Also: the Arabic "نسخ البريد" is hardcoded on the English page, harden contact.php (REMOTE_ADDR only, require a valid ts), make 404 noindex with no /404/ duplicate, remove the 🌐 emoji, reach SEO 100, fix the About capabilities copy, and record real videos if ffmpeg exists.
+Keep all existing rules (side drawer right in Arabic / left in English, zero gradients, Arabic split by words only, email-only contact, React 18).
 
-Keep all existing rules: the side drawer stays (right in Arabic, left in English), zero gradients, Arabic split by words only, email-only contact, React 18.
-
-Every claim in summaries/03-fixes-and-polish.md must cite evidence (file:line, command output, or screenshot/frame name). When done: run the checks, run npm run package, write the summary, commit, and STOP. Do not deploy.
+Every item in summaries/04-final-fixes.md needs behavioral evidence (browser values, frame names, counts, grep outputs, video durations). Then run the checks, npm run package, commit, and STOP. Do not deploy.
 ```

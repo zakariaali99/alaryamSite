@@ -19,7 +19,7 @@ export function useReveal(containerRef: RefObject<HTMLElement | null>) {
       if (!elements || elements.length === 0) return;
 
       ScrollTrigger.batch(elements, {
-        start: 'top 88%',
+        start: 'top bottom-=10%',
         once: true,
         onEnter: (batch) => {
           gsap.fromTo(
@@ -36,6 +36,10 @@ export function useReveal(containerRef: RefObject<HTMLElement | null>) {
           );
         },
       });
+
+      if (document.fonts) {
+        document.fonts.ready.then(() => ScrollTrigger.refresh());
+      }
     }, containerRef);
 
     return () => {

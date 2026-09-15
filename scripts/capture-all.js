@@ -1,44 +1,67 @@
+// scripts/capture-all.js
 import puppeteer from 'puppeteer-core';
 import path from 'path';
 import fs from 'fs';
 import { execSync } from 'child_process';
 
 const chromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const outDir = path.resolve('summaries/screenshots/03');
+const ffmpegPath = '/opt/homebrew/bin/ffmpeg';
+const outDir = path.resolve('summaries/screenshots/04');
 const frameDir = path.join(outDir, 'frames');
 const baseUrl = 'http://localhost:4173';
 
-if (!fs.existsSync(outDir)) {
-  fs.mkdirSync(outDir, { recursive: true });
-}
-if (!fs.existsSync(frameDir)) {
-  fs.mkdirSync(frameDir, { recursive: true });
-}
+fs.mkdirSync(outDir, { recursive: true });
+fs.mkdirSync(frameDir, { recursive: true });
 
 async function run() {
-  console.log('🚀 Starting full Plan 03 screenshot & video generation with Puppeteer...');
+  console.log('🚀 Starting Plan 04 Screenshot & Video Capture Suite...');
   const browser = await puppeteer.launch({
     executablePath: chromePath,
-    headless: true,
+    headless: 'new',
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
   const page = await browser.newPage();
 
-  // Helper: wait for fonts & reveals
-  async function preparePage() {
-    await page.evaluate(() => document.fonts.ready);
-    await new Promise((r) => setTimeout(r, 600));
-    await page.evaluate(() => {
-      document.querySelectorAll('[data-reveal]').forEach((el) => {
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-      });
+  // Helper: scroll through whole page in steps of 60% viewport height, waiting 250ms per step
+  async function scrollThroughPage() {
+    await page.evaluate(async () => {
+      const step = window.innerHeight * 0.6;
+      let current = 0;
+      const max = document.body.scrollHeight;
+      while (current < max) {
+        current += step;
+        window.scrollTo(0, current);
+        await new Promise((r) => setTimeout(r, 250));
+      }
+      window.scrollTo(0, 0);
     });
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 800));
   }
 
-  // 1. Full-page screenshots (24 files)
+  // Helper: count hidden elements excluding drawer and its backdrop
+  async function countHiddenElements() {
+    return await page.evaluate(() => {
+      const drawer = document.querySelector('#mobile-drawer, [role="dialog"], [data-drawer]');
+      const drawerBackdrop = document.querySelector('.drawer-backdrop');
+
+      return [...document.querySelectorAll('[data-reveal], .split-word, h1, h2, h3, p, a, li')]
+        .filter((el) => {
+          if (drawer && drawer.contains(el)) return false;
+          if (drawerBackdrop && drawerBackdrop.contains(el)) return false;
+          if (el.closest('#mobile-drawer') || el.closest('[data-drawer]')) return false;
+
+          const s = getComputedStyle(el);
+          return (
+            el.getBoundingClientRect().height > 0 &&
+            (parseFloat(s.opacity) < 0.99 || s.visibility === 'hidden')
+          );
+        })
+        .length;
+    });
+  }
+
+  // 1. Full-page screenshots (24 files) + hidden element auditing
   const pagesToCapture = [
     { name: 'home', ar: '/ar/', en: '/en/' },
     { name: 'services', ar: '/ar/services/', en: '/en/services/' },
@@ -48,6 +71,9 @@ async function run() {
     { name: '404', ar: '/404.html', en: '/404.html' },
   ];
 
+  const auditResults = [];
+
+  console.log('\n--- Capturing 24 Full-Page Screenshots & Verifying Hidden Counts ---');
   for (const item of pagesToCapture) {
     for (const lang of ['ar', 'en']) {
       const urlPath = item[lang];
@@ -55,322 +81,301 @@ async function run() {
       // 1440px desktop
       await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
       await page.goto(`${baseUrl}${urlPath}`, { waitUntil: 'networkidle0' });
-      await preparePage();
+      await page.evaluate(() => document.fonts.ready);
+      await scrollThroughPage();
+      const hidden1440 = await countHiddenElements();
       const fn1440 = `${item.name}-${lang}-1440.png`;
       await page.screenshot({ path: path.join(outDir, fn1440), fullPage: true });
-      console.log(`📸 Saved: ${fn1440}`);
+      auditResults.push({ page: item.name, lang, viewport: '1440px', hiddenCount: hidden1440 });
+      console.log(`📸 Saved: ${fn1440} (Hidden elements: ${hidden1440})`);
 
       // 390px mobile
       await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
       await page.goto(`${baseUrl}${urlPath}`, { waitUntil: 'networkidle0' });
-      await preparePage();
+      await page.evaluate(() => document.fonts.ready);
+      await scrollThroughPage();
+      const hidden390 = await countHiddenElements();
       const fn390 = `${item.name}-${lang}-390.png`;
       await page.screenshot({ path: path.join(outDir, fn390), fullPage: true });
-      console.log(`📸 Saved: ${fn390}`);
+      auditResults.push({ page: item.name, lang, viewport: '390px', hiddenCount: hidden390 });
+      console.log(`📸 Saved: ${fn390} (Hidden elements: ${hidden390})`);
     }
   }
 
-  // 2. Drawer open in Arabic (at 390, drawer on RIGHT)
-  console.log('📸 Capturing drawer-open-ar-390.png...');
+  // 2. Drawer open states
+  console.log('\n--- Capturing Drawer States ---');
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
   await page.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
-  await page.evaluate(() => document.fonts.ready);
   await page.click('button[aria-controls="mobile-drawer"]');
   await new Promise((r) => setTimeout(r, 650));
   await page.screenshot({ path: path.join(outDir, 'drawer-open-ar-390.png') });
   console.log('📸 Saved: drawer-open-ar-390.png');
 
-  // 3. Drawer open in English (at 390, drawer on LEFT)
-  console.log('📸 Capturing drawer-open-en-390.png...');
   await page.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle0' });
-  await page.evaluate(() => document.fonts.ready);
   await page.click('button[aria-controls="mobile-drawer"]');
   await new Promise((r) => setTimeout(r, 650));
   await page.screenshot({ path: path.join(outDir, 'drawer-open-en-390.png') });
   console.log('📸 Saved: drawer-open-en-390.png');
 
-  // 4. Contact validation error (Arabic, 390px)
-  console.log('📸 Capturing contact-validation-ar-390.png...');
-  await page.goto(`${baseUrl}/ar/contact/`, { waitUntil: 'networkidle0' });
-  await page.evaluate(() => document.fonts.ready);
-  await page.click('button[type="submit"]');
-  await new Promise((r) => setTimeout(r, 500));
-  await page.screenshot({ path: path.join(outDir, 'contact-validation-ar-390.png') });
-  console.log('📸 Saved: contact-validation-ar-390.png');
-
-  // 5. Contact Error State (Arabic, 1440px) via Request Interception 500
-  console.log('📸 Capturing contact-error-ar-1440.png...');
-  const errorPage = await browser.newPage();
-  await errorPage.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
-  await errorPage.setRequestInterception(true);
-  errorPage.on('request', (req) => {
-    if (req.url().includes('/api/contact.php')) {
-      setTimeout(() => {
+  // 3. Contact Form validation, intercepted success & error
+  console.log('\n--- Capturing Contact States ---');
+  await page.setRequestInterception(true);
+  const requestHandler = (req) => {
+    if (req.url().includes('/api/contact.php') && req.method() === 'POST') {
+      if (req.headers()['x-mock-error']) {
         req.respond({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ ok: false, error: 'server' }),
+          body: JSON.stringify({ ok: false, error: 'server_error' }),
         });
-      }, 400);
-    } else {
-      req.continue();
-    }
-  });
-
-  await errorPage.goto(`${baseUrl}/ar/contact/`, { waitUntil: 'networkidle0' });
-  await errorPage.evaluate(() => document.fonts.ready);
-  await errorPage.type('#form-name', 'طارق محمد');
-  await errorPage.type('#form-email', 'tareq@example.ly');
-  await errorPage.type('#form-message', 'رسالة استفسار تقني تختبر حالة الخطأ للنموذج.');
-  await errorPage.click('button[type="submit"]');
-  await new Promise((r) => setTimeout(r, 1200));
-  await errorPage.screenshot({ path: path.join(outDir, 'contact-error-ar-1440.png') });
-  console.log('📸 Saved: contact-error-ar-1440.png');
-  await errorPage.close();
-
-  // 6. Contact Success State (English 1440px & Arabic 390px) via Request Interception 200
-  console.log('📸 Capturing contact-success-en-1440.png & contact-success-ar-390.png...');
-  const successPage = await browser.newPage();
-  await successPage.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
-  await successPage.setRequestInterception(true);
-  successPage.on('request', (req) => {
-    if (req.url().includes('/api/contact.php')) {
-      setTimeout(() => {
+      } else {
         req.respond({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({ ok: true }),
         });
-      }, 800);
+      }
     } else {
       req.continue();
     }
-  });
+  };
+  page.on('request', requestHandler);
 
-  await successPage.goto(`${baseUrl}/en/contact/`, { waitUntil: 'networkidle0' });
-  await successPage.evaluate(() => document.fonts.ready);
-  await successPage.screenshot({ path: path.join(frameDir, 'contact-submit-1.png') });
+  // Validation state (Arabic 390)
+  await page.goto(`${baseUrl}/ar/contact/`, { waitUntil: 'networkidle0' });
+  await page.click('button[type="submit"]');
+  await new Promise((r) => setTimeout(r, 500));
+  await page.screenshot({ path: path.join(outDir, 'contact-validation-ar-390.png') });
+  console.log('📸 Saved: contact-validation-ar-390.png');
 
-  await successPage.type('#form-name', 'Alexander Wright');
-  await successPage.type('#form-email', 'alex@example.com');
-  await successPage.type('#form-organization', 'Global Tech Ltd');
-  await successPage.type('#form-message', 'We would like to consult on enterprise cloud architecture and IT security systems.');
-  await successPage.screenshot({ path: path.join(frameDir, 'contact-submit-2.png') });
+  // Error state (Arabic 1440)
+  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
+  await page.setExtraHTTPHeaders({ 'x-mock-error': '1' });
+  await page.goto(`${baseUrl}/ar/contact/`, { waitUntil: 'networkidle0' });
+  await page.type('input[name="name"]', 'سالم علي');
+  await page.type('input[name="email"]', 'salem@example.ly');
+  await page.type('textarea[name="message"]', 'طلب استشارة بخصوص الحلول البرمجية المتكاملة');
+  await page.click('button[type="submit"]');
+  await new Promise((r) => setTimeout(r, 1200));
+  await page.screenshot({ path: path.join(outDir, 'contact-error-ar-1440.png') });
+  console.log('📸 Saved: contact-error-ar-1440.png');
 
-  await successPage.click('button[type="submit"]');
-  await new Promise((r) => setTimeout(r, 350));
-  await successPage.screenshot({ path: path.join(frameDir, 'contact-submit-3.png') }); // Submitting spinner
-
-  await new Promise((r) => setTimeout(r, 1100)); // Wait for 200 response & drawn check
-  await successPage.screenshot({ path: path.join(frameDir, 'contact-submit-4.png') }); // Success panel
-  await successPage.screenshot({ path: path.join(outDir, 'contact-success-en-1440.png') });
+  // Success state (English 1440)
+  await page.setExtraHTTPHeaders({});
+  await page.goto(`${baseUrl}/en/contact/`, { waitUntil: 'networkidle0' });
+  await page.type('input[name="name"]', 'John Doe');
+  await page.type('input[name="email"]', 'john@example.com');
+  await page.type('textarea[name="message"]', 'Requesting partnership consultation.');
+  await page.click('button[type="submit"]');
+  await new Promise((r) => setTimeout(r, 1200));
+  await page.screenshot({ path: path.join(outDir, 'contact-success-en-1440.png') });
   console.log('📸 Saved: contact-success-en-1440.png');
 
-  // Mobile Arabic success
-  await successPage.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
-  await successPage.goto(`${baseUrl}/ar/contact/`, { waitUntil: 'networkidle0' });
-  await successPage.evaluate(() => document.fonts.ready);
-  await successPage.type('#form-name', 'طارق محمد');
-  await successPage.type('#form-email', 'tareq@example.ly');
-  await successPage.type('#form-message', 'رسالة استفسار تقني حول خدمات تطوير البرمجيات والأنظمة.');
-  await successPage.click('button[type="submit"]');
-  await new Promise((r) => setTimeout(r, 1400));
-  await successPage.screenshot({ path: path.join(outDir, 'contact-success-ar-390.png') });
+  // Success state (Arabic 390)
+  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+  await page.goto(`${baseUrl}/ar/contact/`, { waitUntil: 'networkidle0' });
+  await page.type('input[name="name"]', 'سالم علي');
+  await page.type('input[name="email"]', 'salem@example.ly');
+  await page.type('textarea[name="message"]', 'طلب استشارة');
+  await page.click('button[type="submit"]');
+  await new Promise((r) => setTimeout(r, 1200));
+  await page.screenshot({ path: path.join(outDir, 'contact-success-ar-390.png') });
   console.log('📸 Saved: contact-success-ar-390.png');
-  await successPage.close();
 
-  // 7. Page Transitions proof: English & Arabic 6-frame sequences
-  console.log('📸 Capturing page transition sequences...');
-  const vtPage = await browser.newPage();
-  await vtPage.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
+  page.off('request', requestHandler);
+  await page.setRequestInterception(false);
 
-  // English transition: Home -> Services
-  await vtPage.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle0' });
-  await vtPage.evaluate(() => document.fonts.ready);
-  await vtPage.screenshot({ path: path.join(frameDir, 'page-transition-en-1.png') });
+  // 4. View Transition Frame Sequences (80ms interval)
+  console.log('\n--- Capturing 80ms View Transition Frame Sequences ---');
+  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 
-  // Trigger transition navigation
-  await vtPage.evaluate(() => {
-    const link = document.querySelector('a[href="/en/services/"]');
-    if (link) link.click();
+  // EN
+  await page.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle0' });
+  await page.evaluate(() => {
+    const o = document.startViewTransition.bind(document);
+    window.__vt = 0;
+    document.startViewTransition = (cb) => {
+      window.__vt++;
+      return o(cb);
+    };
   });
-  for (let f = 2; f <= 5; f++) {
-    await new Promise((r) => setTimeout(r, 100));
-    await vtPage.screenshot({ path: path.join(frameDir, `page-transition-en-${f}.png`) });
-  }
-  await new Promise((r) => setTimeout(r, 450));
-  await vtPage.screenshot({ path: path.join(frameDir, 'page-transition-en-6.png') });
-  console.log('📸 Saved: page-transition-en frames 1-6');
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await new Promise((r) => setTimeout(r, 400));
+  const linkEn = await page.$('header a[href="/en/about/"]');
+  const enFramesPromise = (async () => {
+    for (let i = 1; i <= 10; i++) {
+      const num = String(i).padStart(2, '0');
+      await page.screenshot({ path: path.join(frameDir, `vt-en-${num}.png`) });
+      await new Promise((r) => setTimeout(r, 80));
+    }
+  })();
+  await linkEn.click();
+  await enFramesPromise;
+  const vtEnVal = await page.evaluate(() => window.__vt);
+  console.log(`✅ EN View Transition Frames captured. window.__vt = ${vtEnVal}`);
 
-  // Arabic transition: Home -> Services
-  await vtPage.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
-  await vtPage.evaluate(() => document.fonts.ready);
-  await vtPage.screenshot({ path: path.join(frameDir, 'page-transition-ar-1.png') });
-
-  await vtPage.evaluate(() => {
-    const link = document.querySelector('a[href="/ar/services/"]');
-    if (link) link.click();
+  // AR
+  await page.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
+  await page.evaluate(() => {
+    const o = document.startViewTransition.bind(document);
+    window.__vt = 0;
+    document.startViewTransition = (cb) => {
+      window.__vt++;
+      return o(cb);
+    };
   });
-  for (let f = 2; f <= 5; f++) {
-    await new Promise((r) => setTimeout(r, 100));
-    await vtPage.screenshot({ path: path.join(frameDir, `page-transition-ar-${f}.png`) });
-  }
-  await new Promise((r) => setTimeout(r, 450));
-  await vtPage.screenshot({ path: path.join(frameDir, 'page-transition-ar-6.png') });
-  console.log('📸 Saved: page-transition-ar frames 1-6');
-  await vtPage.close();
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await new Promise((r) => setTimeout(r, 400));
+  const linkAr = await page.$('header a[href="/ar/about/"]');
+  const arFramesPromise = (async () => {
+    for (let i = 1; i <= 10; i++) {
+      const num = String(i).padStart(2, '0');
+      await page.screenshot({ path: path.join(frameDir, `vt-ar-${num}.png`) });
+      await new Promise((r) => setTimeout(r, 80));
+    }
+  })();
+  await linkAr.click();
+  await arFramesPromise;
+  const vtArVal = await page.evaluate(() => window.__vt);
+  console.log(`✅ AR View Transition Frames captured. window.__vt = ${vtArVal}`);
 
-  // 8. 5-Second Motion Failsafe proof (CPU 4x slowdown)
-  console.log('📸 Testing 5-second motion failsafe with 4x CPU slowdown...');
-  const cpuPage = await browser.newPage();
-  const client = await cpuPage.target().createCDPSession();
-  await client.send('Emulation.setCPUThrottlingRate', { rate: 4 });
-  await cpuPage.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
-  await cpuPage.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
-  
-  // Wait 5.2 seconds
-  await new Promise((r) => setTimeout(r, 5200));
+  // 5. Native Puppeteer Screencast Video Recordings (§4)
+  console.log('\n--- Recording Native Screencast Videos with Puppeteer ---');
 
-  const motionReady = await cpuPage.evaluate(() => window.__ALARYAM_MOTION_READY__);
-  const docClass = await cpuPage.evaluate(() => document.documentElement.className);
-  console.log(`  window.__ALARYAM_MOTION_READY__ = ${motionReady}`);
-  console.log(`  document.documentElement.className = "${docClass}"`);
+  // Video 1: vt-en.webm
+  console.log('🎥 Recording vt-en.webm...');
+  await page.setViewport({ width: 1440, height: 900 });
+  await page.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle0' });
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await new Promise((r) => setTimeout(r, 400));
 
-  // Frame before scrolling: elements below fold should be hidden with opacity:0 / transform translateY
-  await cpuPage.screenshot({ path: path.join(frameDir, 'reveal-after-5s-1-before-scroll.png') });
-
-  // Scroll down 700px
-  await cpuPage.evaluate(() => {
-    window.scrollTo({ top: 700, behavior: 'instant' });
+  let recorder = await page.screencast({
+    path: path.join(outDir, 'vt-en.webm'),
+    ffmpegPath: ffmpegPath,
   });
-  await new Promise((r) => setTimeout(r, 300));
-  await cpuPage.screenshot({ path: path.join(frameDir, 'reveal-after-5s-2-after-scroll.png') });
-  console.log('📸 Saved: reveal-after-5s frames 1 & 2');
-  await cpuPage.close();
+  await page.evaluate(() => {
+    document.querySelector('header a[href="/en/about/"]')?.click();
+  });
+  await new Promise((r) => setTimeout(r, 1500));
+  await recorder.stop();
+  await new Promise((r) => setTimeout(r, 800));
+  console.log('✅ Created: vt-en.webm');
 
-  // 9. Drawer animation sequence frames
-  console.log('📸 Capturing drawer-frame sequence...');
+  // Video 2: vt-ar.webm
+  console.log('🎥 Recording vt-ar.webm...');
+  await page.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await new Promise((r) => setTimeout(r, 400));
+
+  recorder = await page.screencast({
+    path: path.join(outDir, 'vt-ar.webm'),
+    ffmpegPath: ffmpegPath,
+  });
+  await page.evaluate(() => {
+    document.querySelector('header a[href="/ar/about/"]')?.click();
+  });
+  await new Promise((r) => setTimeout(r, 1500));
+  await recorder.stop();
+  await new Promise((r) => setTimeout(r, 800));
+  console.log('✅ Created: vt-ar.webm');
+
+  // Video 3: hero-intro-ar.webm
+  console.log('🎥 Recording hero-intro-ar.webm...');
+  await page.goto(`${baseUrl}/ar/`, { waitUntil: 'domcontentloaded' });
+  recorder = await page.screencast({
+    path: path.join(outDir, 'hero-intro-ar.webm'),
+    ffmpegPath: ffmpegPath,
+  });
+  await new Promise((r) => setTimeout(r, 2500)); // wait 2.5s
+  await page.evaluate(async () => {
+    const total = document.body.scrollHeight;
+    let curr = 0;
+    while (curr < total) {
+      curr += 120;
+      window.scrollTo(0, curr);
+      await new Promise((res) => setTimeout(res, 80));
+    }
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  await recorder.stop();
+  await new Promise((r) => setTimeout(r, 800));
+  console.log('✅ Created: hero-intro-ar.webm');
+
+  // Video 4: drawer-ar-390.webm
+  console.log('🎥 Recording drawer-ar-390.webm...');
   await page.setViewport({ width: 390, height: 844 });
   await page.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
-  await page.screenshot({ path: path.join(frameDir, 'drawer-frame-1.png') });
-  await page.click('button[aria-controls="mobile-drawer"]');
-  for (let f = 2; f <= 5; f++) {
-    await new Promise((r) => setTimeout(r, 110));
-    await page.screenshot({ path: path.join(frameDir, `drawer-frame-${f}.png`) });
-  }
-  await new Promise((r) => setTimeout(r, 200));
-  await page.screenshot({ path: path.join(frameDir, 'drawer-frame-6.png') });
-
-  // 10. Hero intro sequence frames
-  console.log('📸 Capturing hero-intro sequence...');
-  await page.setViewport({ width: 1440, height: 900 });
-  await page.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
-  for (let f = 1; f <= 6; f++) {
-    await page.evaluate((frame) => {
-      window.scrollTo({ top: (frame - 1) * 320, behavior: 'instant' });
-    }, f);
-    await new Promise((r) => setTimeout(r, 120));
-    await page.screenshot({ path: path.join(frameDir, `hero-intro-frame-${f}.png`) });
-  }
-
-  // 11. No-JS Home page
-  console.log('📸 Capturing nojs-home-ar-1440.png...');
-  const noJsPage = await browser.newPage();
-  await noJsPage.setJavaScriptEnabled(false);
-  await noJsPage.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
-  await noJsPage.goto(`${baseUrl}/ar/`, { waitUntil: 'load' });
-  await new Promise((r) => setTimeout(r, 400));
-  await noJsPage.screenshot({ path: path.join(outDir, 'nojs-home-ar-1440.png'), fullPage: true });
-  console.log('📸 Saved: nojs-home-ar-1440.png');
-  await noJsPage.close();
-
-  // 12. Reduced motion Home page
-  console.log('📸 Capturing reduced-motion-home-en-1440.png...');
-  const reducedMotionPage = await browser.newPage();
-  await reducedMotionPage.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-  await reducedMotionPage.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
-  await reducedMotionPage.goto(`${baseUrl}/en/`, { waitUntil: 'networkidle0' });
-  await reducedMotionPage.evaluate(() => document.fonts.ready);
+  recorder = await page.screencast({
+    path: path.join(outDir, 'drawer-ar-390.webm'),
+    ffmpegPath: ffmpegPath,
+  });
   await new Promise((r) => setTimeout(r, 500));
-  await reducedMotionPage.screenshot({ path: path.join(outDir, 'reduced-motion-home-en-1440.png'), fullPage: true });
-  console.log('📸 Saved: reduced-motion-home-en-1440.png');
-  await reducedMotionPage.close();
+  await page.evaluate(() => {
+    document.querySelector('button[aria-controls="mobile-drawer"]')?.click();
+  });
+  await new Promise((r) => setTimeout(r, 1000));
+  await page.evaluate(() => {
+    document.querySelector('button[aria-label="إغلاق القائمة"]')?.click();
+  });
+  await new Promise((r) => setTimeout(r, 800));
+  await recorder.stop();
+  await new Promise((r) => setTimeout(r, 800));
+  console.log('✅ Created: drawer-ar-390.webm');
 
-  // 13. Horizontal overflow check
-  console.log('\n--- Checking for horizontal overflow at 360px width ---');
-  await page.setViewport({ width: 360, height: 740 });
-  for (const item of pagesToCapture) {
-    for (const lang of ['ar', 'en']) {
-      const urlPath = item[lang];
-      await page.goto(`${baseUrl}${urlPath}`, { waitUntil: 'networkidle0' });
-      const overflow = await page.evaluate(() => {
-        return document.documentElement.scrollWidth > window.innerWidth;
-      });
-      if (overflow) {
-        console.error(`❌ Overflow detected at 360px on ${urlPath}!`);
-      } else {
-        console.log(`✅ No horizontal overflow on ${urlPath} at 360px`);
-      }
-    }
-  }
-
-  // 14. ScrollTrigger count stability test (5 round-trip navigations)
-  console.log('\n--- Testing ScrollTrigger count stability across 5 round-trip navigations ---');
+  // Video 5: contact-success-en.webm
+  console.log('🎥 Recording contact-success-en.webm...');
   await page.setViewport({ width: 1440, height: 900 });
-  await page.goto(`${baseUrl}/ar/`, { waitUntil: 'networkidle0' });
-  for (let i = 1; i <= 5; i++) {
-    await page.evaluate(() => {
-      const link = document.querySelector('a[href="/ar/about/"]');
-      if (link) link.click();
-    });
-    await new Promise((r) => setTimeout(r, 600));
-
-    await page.evaluate(() => {
-      const link = document.querySelector('a[href="/ar/"]');
-      if (link) link.click();
-    });
-    await new Promise((r) => setTimeout(r, 600));
-
-    const triggerCount = await page.evaluate(() => {
-      // @ts-ignore
-      const st = window.ScrollTrigger;
-      return st ? st.getAll().length : 0;
-    });
-    console.log(`  Round ${i}: ScrollTrigger count = ${triggerCount}`);
-  }
+  await page.setRequestInterception(true);
+  page.on('request', requestHandler);
+  await page.goto(`${baseUrl}/en/contact/`, { waitUntil: 'networkidle0' });
+  recorder = await page.screencast({
+    path: path.join(outDir, 'contact-success-en.webm'),
+    ffmpegPath: ffmpegPath,
+  });
+  await page.type('input[name="name"]', 'Sarah Jenkins');
+  await page.type('input[name="email"]', 'sarah@example.com');
+  await page.type('textarea[name="message"]', 'Inquiring about IoT infrastructure integration for our facilities.');
+  await page.evaluate(() => {
+    document.querySelector('button[type="submit"]')?.click();
+  });
+  await new Promise((r) => setTimeout(r, 2000));
+  await recorder.stop();
+  await new Promise((r) => setTimeout(r, 800));
+  page.off('request', requestHandler);
+  await page.setRequestInterception(false);
+  console.log('✅ Created: contact-success-en.webm');
 
   await browser.close();
 
-  // 15. Produce MP4 video clips using ffmpeg
-  const ffmpegBin = '/opt/homebrew/bin/ffmpeg';
-  if (fs.existsSync(ffmpegBin)) {
-    console.log('\n🎬 Encoding MP4 video recordings using ffmpeg...');
-    try {
-      execSync(`${ffmpegBin} -y -framerate 4 -i "${path.join(frameDir, 'page-transition-en-%d.png')}" -c:v libx264 -pix_fmt yuv420p "${path.join(outDir, 'page-transition-en.mp4')}"`, { stdio: 'ignore' });
-      console.log('🎥 Created: page-transition-en.mp4');
-
-      execSync(`${ffmpegBin} -y -framerate 4 -i "${path.join(frameDir, 'page-transition-ar-%d.png')}" -c:v libx264 -pix_fmt yuv420p "${path.join(outDir, 'page-transition-ar.mp4')}"`, { stdio: 'ignore' });
-      console.log('🎥 Created: page-transition-ar.mp4');
-
-      execSync(`${ffmpegBin} -y -framerate 2 -i "${path.join(frameDir, 'contact-submit-%d.png')}" -c:v libx264 -pix_fmt yuv420p "${path.join(outDir, 'contact-submit.mp4')}"`, { stdio: 'ignore' });
-      console.log('🎥 Created: contact-submit.mp4');
-
-      execSync(`${ffmpegBin} -y -framerate 4 -i "${path.join(frameDir, 'drawer-frame-%d.png')}" -c:v libx264 -pix_fmt yuv420p "${path.join(outDir, 'drawer-toggle.mp4')}"`, { stdio: 'ignore' });
-      console.log('🎥 Created: drawer-toggle.mp4');
-
-      execSync(`${ffmpegBin} -y -framerate 3 -i "${path.join(frameDir, 'hero-intro-frame-%d.png')}" -c:v libx264 -pix_fmt yuv420p "${path.join(outDir, 'hero-intro-scroll.mp4')}"`, { stdio: 'ignore' });
-      console.log('🎥 Created: hero-intro-scroll.mp4');
-    } catch (e) {
-      console.warn('FFmpeg encoding warning:', e);
-    }
+  console.log('\n--- HIDDEN ELEMENTS AUDIT TABLE ---');
+  console.table(auditResults);
+  const nonZero = auditResults.filter((r) => r.hiddenCount > 0);
+  if (nonZero.length > 0) {
+    console.error('❌ FAIL: Some pages have hidden elements remaining:', nonZero);
+    process.exit(1);
   } else {
-    console.log('ℹ️ FFmpeg binary not found; 8-frame sequences provided in frames/ directory.');
+    console.log('🎉 ALL 24 pages report exactly 0 hidden elements!');
   }
 
-  console.log('\n🎉 ALL PLAN 03 SCREENSHOTS, VIDEOS, AUDITS & PROOFS COMPLETED!');
+  // Probe durations of the recorded webm files using ffprobe
+  console.log('\n--- WEBM VIDEO DURATIONS (ffprobe) ---');
+  const videos = ['vt-en.webm', 'vt-ar.webm', 'hero-intro-ar.webm', 'drawer-ar-390.webm', 'contact-success-en.webm'];
+  for (const v of videos) {
+    const vPath = path.join(outDir, v);
+    try {
+      const dur = execSync(
+        `${ffmpegPath.replace('ffmpeg', 'ffprobe')} -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${vPath}"`,
+        { encoding: 'utf8' }
+      ).trim();
+      const sz = fs.statSync(vPath).size;
+      console.log(`🎬 ${v}: duration = ${parseFloat(dur).toFixed(2)}s, size = ${(sz / 1024).toFixed(1)} KB`);
+    } catch (e) {
+      console.log(`🎬 ${v}: file size = ${fs.statSync(vPath).size} bytes`);
+    }
+  }
 }
 
 run().catch((err) => {
-  console.error('Capture script error:', err);
+  console.error('Fatal execution error:', err);
   process.exit(1);
 });

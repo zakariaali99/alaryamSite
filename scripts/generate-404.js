@@ -41,7 +41,11 @@ let html404 = template.replace(/<main class="flex-1 w-full">[\s\S]*?<\/main>/, n
 // Replace head tags
 html404 = html404
   .replace(/<title data-rh="true">[\s\S]*?<\/title>/, '<title data-rh="true">404 — AL-ARYAM | الأريام</title><meta data-rh="true" name="robots" content="noindex, follow">')
-  .replace(/<meta data-rh="true" name="description" content="[^"]*">/, '<meta data-rh="true" name="description" content="الصفحة غير موجودة / Page not found">');
+  .replace(/<meta data-rh="true" name="description" content="[^"]*">/, '<meta data-rh="true" name="description" content="الصفحة غير موجودة / Page not found">')
+  .replace(/<link[^>]+rel="canonical"[^>]*>/gi, '')
+  .replace(/<link[^>]+rel="alternate"[^>]*hreflang=[^>]*>/gi, '')
+  .replace(/<link[^>]+hreflang=[^>]*rel="alternate"[^>]*>/gi, '')
+  .replace(/<meta[^>]+property="og:url"[^>]*>/gi, '');
 
 fs.writeFileSync(outPath, html404, 'utf8');
 

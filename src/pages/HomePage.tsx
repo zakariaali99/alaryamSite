@@ -8,12 +8,9 @@ import { WhoWeServe } from '../sections/home/WhoWeServe';
 import { WhyUs } from '../sections/home/WhyUs';
 import { CtaBand } from '../sections/home/CtaBand';
 import { useT } from '../i18n/context';
-import { useReveal } from '../motion/useReveal';
 
 export const HomePage: React.FC = () => {
   const t = useT();
-  const mainRef = useRef<HTMLDivElement | null>(null);
-  useReveal(mainRef);
 
   const organizationJsonLd = {
     '@context': 'https://schema.org',
@@ -35,7 +32,7 @@ export const HomePage: React.FC = () => {
         jsonLd={organizationJsonLd}
       />
 
-      <div ref={mainRef}>
+      <div>
         <Hero />
         <ServicesGrid />
         <HowWeWork />

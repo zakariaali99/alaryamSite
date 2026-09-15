@@ -6,11 +6,9 @@ export interface AppLinkProps extends LinkProps {
 }
 
 export const AppLink = React.forwardRef<HTMLAnchorElement, AppLinkProps>(
-  ({ viewTransition = true, ...props }, ref) => {
-    const isClient = typeof window !== 'undefined';
-    const linkProps = isClient ? { ...props, unstable_viewTransition: viewTransition } : props;
-    return <Link ref={ref} {...linkProps} />;
-  }
+  ({ viewTransition = true, ...props }, ref) => (
+    <Link ref={ref} viewTransition={viewTransition} {...props} />
+  )
 );
 AppLink.displayName = 'AppLink';
 
@@ -19,10 +17,8 @@ export interface AppNavLinkProps extends NavLinkProps {
 }
 
 export const AppNavLink = React.forwardRef<HTMLAnchorElement, AppNavLinkProps>(
-  ({ viewTransition = true, ...props }, ref) => {
-    const isClient = typeof window !== 'undefined';
-    const navLinkProps = isClient ? { ...props, unstable_viewTransition: viewTransition } : props;
-    return <NavLink ref={ref} {...navLinkProps} />;
-  }
+  ({ viewTransition = true, ...props }, ref) => (
+    <NavLink ref={ref} viewTransition={viewTransition} {...props} />
+  )
 );
 AppNavLink.displayName = 'AppNavLink';
