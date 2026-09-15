@@ -4,8 +4,10 @@
 |---|---|---|
 | 01 | Foundation + logo SVGs + Home page (AR + EN) | ✅ Done (`d6a628d`) — `reviews/001` |
 | 02 | ONE RUN: full site · side drawer · contact PHP · SEO · motion system · deploy package | ✅ Done (`389bc06`) — `reviews/002` |
-| 03 | ONE RUN: fixes & polish (18 issues) | ✅ Done (`d369752`) — `reviews/003`: 14/18 verified, transitions still broken |
-| 04 | **ONE RUN:** final fixes — real `viewTransition` prop + browser proof, reveal safety + valid screenshots, 404 head, real video recordings | ▶️ **Run now** |
+| 03 | ONE RUN: fixes & polish (18 issues) | ✅ Done (`d369752`) — `reviews/003` |
+| 04 | ONE RUN: final fixes — transitions, reveal safety, 404 head, real recordings | ✅ Done (`c531c06`) — `reviews/004` |
+| 05 | **ONE RUN:** hero direction B (split blade) · light inner-page headers · visible GSAP blade page transition — all pages | ▶️ **Run now** |
+| — | Deploy to cPanel (owner, manual — `DEPLOY.md` + `reviews/004` §3) | ⏳ After plan 05 review |
 
 ## Owner decisions
 - **Logo:** blue triangle + "AL-ARYAM — Technical partner". Primary blue `#0D07AD`.
@@ -17,6 +19,8 @@
 - **Motion:** premium transitions, animated movement and effects.
 - **Mobile nav:** side drawer (right in Arabic, left in English).
 - **Delivery:** one-run plans.
+- **Hero** (2026-09-15, after launch-ready review): full-blue hero rejected. **Direction B** instead: white page + blue panel cut at the logo's 61° angle + ink stripe. Inner pages get light headers with a slim blade slab.
+- **Page transition:** must be clearly visible. A GSAP blade overlay (cover → mark → reveal, reading direction).
 
 ## Site map (final)
 ```

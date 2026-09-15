@@ -4,10 +4,9 @@ import fs from 'fs';
 import path from 'path';
 
 const urls = [
-  { name: 'en-services', url: 'http://localhost:4173/en/services/' },
-  { name: 'ar-about', url: 'http://localhost:4173/ar/about/' },
-  { name: 'en-contact', url: 'http://localhost:4173/en/contact/' },
-  { name: 'ar-services-iot', url: 'http://localhost:4173/ar/services/iot/' },
+  { name: 'ar-home', url: 'http://localhost:4173/ar/' },
+  { name: 'en-home', url: 'http://localhost:4173/en/' },
+  { name: 'ar-services-detail', url: 'http://localhost:4173/ar/services/software-development/' },
 ];
 
 const results = [];
@@ -35,6 +34,7 @@ for (const item of urls) {
         a11y: Math.round((data.categories.accessibility?.score || 0) * 100),
         bp: Math.round((data.categories['best-practices']?.score || 0) * 100),
         seo: Math.round((data.categories.seo?.score || 0) * 100),
+        cls: data.audits['cumulative-layout-shift']?.numericValue?.toFixed(3) || '0',
       };
 
       // Check audits that failed SEO or A11y or BP

@@ -1,3 +1,10 @@
+export const BLADE_ANGLE_DEG = 61;
+export const BLADE_K = 0.554; // = 1 / Math.tan(61 * Math.PI / 180)
+
+export function bladeRun(height: number): number {
+  return height * BLADE_K;
+}
+
 export const motionTokens = {
   ease: {
     brand: 'brand',
@@ -22,3 +29,4 @@ export const motionTokens = {
     mobile: 24,
   },
 } as const;
+

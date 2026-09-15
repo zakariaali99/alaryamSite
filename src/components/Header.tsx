@@ -256,7 +256,6 @@ export const Header: React.FC = () => {
       <header
         ref={headerRef}
         className="sticky top-0 z-40 w-full bg-white border-b border-line transition-all duration-200"
-        style={{ viewTransitionName: 'site-header' }}
       >
         {/* Scroll Progress Bar at very top */}
         <div

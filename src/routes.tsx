@@ -10,13 +10,18 @@ import { RootRedirect } from './pages/RootRedirect';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 import { SmoothScroll } from './motion/SmoothScroll';
+import { BladeProvider } from './motion/BladeTransitionContext';
+import { BladeTransition } from './motion/BladeTransition';
 
 const AppRoot: React.FC = () => {
   return (
     <I18nProvider>
-      <SmoothScroll>
-        <Outlet />
-      </SmoothScroll>
+      <BladeProvider>
+        <SmoothScroll>
+          <BladeTransition />
+          <Outlet />
+        </SmoothScroll>
+      </BladeProvider>
     </I18nProvider>
   );
 };

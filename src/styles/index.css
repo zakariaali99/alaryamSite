@@ -12,6 +12,7 @@
   --line: #E3E5EC;
   --surface: #F6F7FA;
   --white: #FFFFFF;
+  --blade-k: 0.554;
   --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-brand-in-out: cubic-bezier(0.76, 0, 0.24, 1);
 }
@@ -145,71 +146,6 @@ html.motion-ok [data-reveal] {
 @media (max-width: 1023px) {
   html.motion-ok [data-reveal] {
     transform: translateY(24px);
-  }
-}
-
-/* View Transitions API */
-::view-transition-old(root) {
-  animation: vt-old 450ms var(--ease-brand-in-out) both;
-}
-::view-transition-new(root) {
-  animation: vt-new 700ms var(--ease-brand) both;
-}
-
-/* LTR: the blue blade sweeps left → right; RTL mirrors it */
-@keyframes vt-old {
-  to {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-}
-@keyframes vt-new {
-  0% {
-    clip-path: polygon(0 0, 0 0, -30% 100%, -30% 100%);
-  }
-  100% {
-    clip-path: polygon(0 0, 130% 0, 100% 100%, -30% 100%);
-  }
-}
-
-:root[dir="rtl"]::view-transition-old(root),
-html[dir="rtl"]::view-transition-old(root) {
-  animation-name: vt-old-rtl;
-}
-:root[dir="rtl"]::view-transition-new(root),
-html[dir="rtl"]::view-transition-new(root) {
-  animation-name: vt-new-rtl;
-}
-
-@keyframes vt-old-rtl {
-  to {
-    opacity: 0;
-    transform: translateX(40px);
-  }
-}
-@keyframes vt-new-rtl {
-  0% {
-    clip-path: polygon(100% 0, 100% 0, 130% 100%, 130% 100%);
-  }
-  100% {
-    clip-path: polygon(100% 0, -30% 0, 0 100%, 130% 100%);
-  }
-}
-
-/* A solid brand-600 blade leading the new page */
-::view-transition-group(root) {
-  background: var(--brand-600);
-}
-
-::view-transition-group(site-header) {
-  animation: none;
-  z-index: 100;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
   }
 }
 
