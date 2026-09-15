@@ -27,6 +27,8 @@ export const Hero: React.FC = () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
+    let split: SplitText | null = null;
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: 'brand' } });
 
@@ -54,7 +56,6 @@ export const Hero: React.FC = () => {
       }
 
       // Split heading words (Arabic safe: WORDS ONLY)
-      let split: SplitText | null = null;
       let headingWords: HTMLElement[] = [];
       if (headingRef.current) {
         try {
@@ -246,6 +247,7 @@ export const Hero: React.FC = () => {
 
     return () => {
       ctx.revert();
+      split?.revert();
     };
   }, [lang]);
 
@@ -273,6 +275,7 @@ export const Hero: React.FC = () => {
 
             {/* H1 */}
             <h1
+              key={lang}
               ref={headingRef}
               className="text-white text-h1 tracking-tight mb-6 hero-heading"
             >

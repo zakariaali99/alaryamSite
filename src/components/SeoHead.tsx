@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Head } from 'vite-react-ssg';
 import { useLang, useT } from '../i18n/context';
 
@@ -22,6 +22,12 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
 
   const pageTitle = title || t('seo.home.title');
   const pageDesc = description || t('seo.home.description');
+
+  useEffect(() => {
+    if (typeof document !== 'undefined' && pageTitle) {
+      document.title = pageTitle;
+    }
+  }, [pageTitle]);
 
   const origin = 'https://alaryam.ly';
   // Normalize path: ensures leading slash and trailing slash unless empty/root

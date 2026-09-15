@@ -38,6 +38,8 @@ export const PageHero: React.FC<PageHeroProps> = ({
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
+    let split: SplitText | null = null;
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: 'brand' } });
 
@@ -82,7 +84,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
       let words: HTMLElement[] = [];
       if (headingRef.current) {
         try {
-          const split = new SplitText(headingRef.current, {
+          split = new SplitText(headingRef.current, {
             type: 'words',
             wordsClass: 'inline-block overflow-hidden align-top',
           });
@@ -124,8 +126,9 @@ export const PageHero: React.FC<PageHeroProps> = ({
 
     return () => {
       ctx.revert();
+      split?.revert();
     };
-  }, [title]);
+  }, [lang, title]);
 
   return (
     <section
@@ -177,6 +180,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
 
           {/* H1 Title */}
           <h1
+            key={`${lang}-${title}`}
             ref={headingRef}
             className="text-white text-h1 tracking-tight mb-4 page-hero-title"
           >
